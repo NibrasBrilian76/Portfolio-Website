@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Profil</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="sidebar.js"></script>
+  <style>
+    .profilPic {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      margin: 0 auto 10px;
+      border: 4px solid rgba(255,255,255,0.2);
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .profilPic:hover {
+      opacity: 0.8;
+      border-color: var(--mainColor);
+    }
+    .uploadHint {
+      color: #94a3b8;
+      text-align: center;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+    .inputLabel {
+      color: #94a3b8;
+      font-size: 13px;
+      margin-bottom: 5px;
+      margin-top: 5px;
+    }
+    .divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin: 20px 0;
+    }
+    .sectionTitle {
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="background"></div>
+
+<div class="container">
+  <div class="card">
+
+    <h1>Edit Profil ✏️</h1>
+
+    <img id="profilPic" src="https://via.placeholder.com/120" class="profilPic" onclick="document.getElementById('uploadPic').click()">
+    <input type="file" id="uploadPic" hidden accept="image/*">
+    <p class="uploadHint">Klik foto untuk ganti 📷</p>
+
+    <hr class="divider">
+    <p class="sectionTitle">Informasi Akun</p>
+
+    <p class="inputLabel">Username</p>
+    <input type="text" id="username" placeholder="Username">
+
+    <p class="inputLabel">Email</p>
+    <input type="email" id="email" placeholder="Email">
+
+    <p class="inputLabel">Tagline</p>
+    <input type="text" id="tagline" placeholder="Contoh: Full Stack Developer 🚀">
+
+    <hr class="divider">
+    <p class="sectionTitle">Informasi Pribadi</p>
+
+    <p class="inputLabel">Nama Lengkap</p>
+    <input type="text" id="full_name" placeholder="Nama lengkap">
+
+    <p class="inputLabel">Nomor Telepon</p>
+    <input type="text" id="phone" placeholder="Contoh: 08123456789">
+
+    <p class="inputLabel">Lokasi/Kota</p>
+    <input type="text" id="location" placeholder="Contoh: Jakarta, Indonesia">
+
+    <p class="inputLabel">Website Pribadi</p>
+    <input type="text" id="website" placeholder="Contoh: https://nibras.dev">
+
+    <p class="inputLabel">Tanggal Lahir</p>
+    <input type="date" id="birthdate">
+
+    <hr class="divider">
+    <p class="sectionTitle">Ganti Password</p>
+    <p class="uploadHint">Kosongkan jika tidak ingin ganti password</p>
+
+    <p class="inputLabel">Password Lama</p>
+    <input type="password" id="password_lama" placeholder="Password lama">
+
+    <p class="inputLabel">Password Baru</p>
+    <input type="password" id="password_baru" placeholder="Password baru">
+
+    <hr class="divider">
+
+    <button onclick="simpanProfil()">Simpan Perubahan 💾</button>
+    <p id="message"></p>
+
+    <button onclick="window.location.href='/dashboard.html'" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1)">
+      Kembali ke Dashboard
+    </button>
+
+  </div>
+</div>
+
+<script>
+async function init(){
+    const res = await fetch("/cek-login");
+    const data = await res.json();
+    if(!data.loggedIn){
+        window.location.href = "/login.html";
+        return;
+    }
+
+    buatSidebar(data.user.username);
+    loadProfil();
+}
+
+async function loadProfil(){
+    const res = await fetch("/ambil-profil");
+    const data = await res.json();
+
+    document.getElementById("username").value = data.username || "";
+    document.getElementById("email").value = data.email || "";
+    document.getElementById("tagline").value = data.tagline || "";
+    document.getElementById("full_name").value = data.full_name || "";
+    document.getElementById("phone").value = data.phone || "";
+    document.getElementById("location").value = data.location || "";
+    document.getElementById("website").value = data.website || "";
+
+    if(data.birthdate){
+        document.getElementById("birthdate").value = data.birthdate.split("T")[0];
+    }
+}
+
+// Upload foto profil
+document.getElementById("uploadPic").addEventListener("change", function(){
+    const file = this.files[0];
+    const reader = new FileReader();
+    reader.onload = async function(){
+        document.getElementById("profilPic").src = reader.result;
+        await fetch("/simpan-foto", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ profile_image: reader.result })
+        });
+        alert("Foto profil tersimpan 🔥");
+    }
+    reader.readAsDataURL(file);
+});
+
+// Load foto profil
+async function loadFoto(){
+    const res = await fetch("/ambil-portfolio");
+    const data = await res.json();
+    if(data.portfolio.profile_image){
+        document.getElementById("profilPic").src = data.portfolio.profile_image;
+    }
+}
+
+async function simpanProfil(){
+    const username = document.getElementById("username").value;
+    const email = document.getElementById("email").value;
+    const tagline = document.getElementById("tagline").value;
+    const full_name = document.getElementById("full_name").value;
+    const phone = document.getElementById("phone").value;
+    const location = document.getElementById("location").value;
+    const website = document.getElementById("website").value;
+    const birthdate = document.getElementById("birthdate").value;
+    const password_lama = document.getElementById("password_lama").value;
+    const password_baru = document.getElementById("password_baru").value;
+
+    const res = await fetch("/update-profil", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, tagline, full_name, phone, location, website, birthdate, password_lama, password_baru })
+    });
+
+    const data = await res.text();
+    document.getElementById("message").innerText = data;
+
+    if(data.includes("berhasil")){
+        setTimeout(() => {
+            window.location.href = "/dashboard.html";
+        }, 1500);
+    }
+}
+
+init();
+loadFoto();
+</script>
+
+</body>
+</html>

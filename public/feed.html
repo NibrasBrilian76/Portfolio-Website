@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feed 🔥</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="sidebar.js"></script>
+  <style>
+    .feedContainer {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding-bottom: 40px;
+    }
+    .postCard {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      overflow: hidden;
+      animation: fade 0.5s ease;
+    }
+    .postHeader {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px;
+    }
+    .postHeaderLeft {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+    .postAvatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+    .postUsername {
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .postTime {
+      color: #94a3b8;
+      font-size: 12px;
+    }
+    .postImage {
+      width: 100%;
+      max-height: 500px;
+      object-fit: cover;
+    }
+    .postCaption {
+      color: #e2e8f0;
+      font-size: 14px;
+      padding: 12px 15px;
+      line-height: 1.6;
+    }
+    .postActions {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 15px 15px;
+    }
+    .actionBtn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: none;
+      background: rgba(255,255,255,0.06);
+      color: white;
+      font-size: 13px;
+      cursor: pointer;
+      transition: 0.2s;
+      width: auto !important;
+      margin-top: 0 !important;
+    }
+    .actionBtn:hover {
+      background: rgba(255,255,255,0.12);
+    }
+    .actionBtn.liked {
+      color: #ef4444;
+      background: rgba(239,68,68,0.15);
+    }
+    .commentSection {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 15px;
+      display: none;
+    }
+    .commentSection.open {
+      display: block;
+    }
+    .commentItem {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+      align-items: flex-start;
+    }
+    .commentAvatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .commentBubble {
+      background: rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 8px 12px;
+      flex: 1;
+    }
+    .commentUser {
+      color: white;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 3px;
+    }
+    .commentText {
+      color: #cbd5e1;
+      font-size: 13px;
+    }
+    .commentInput {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .commentInput input {
+      flex: 1;
+      padding: 10px 15px;
+      border-radius: 12px;
+      border: none;
+      outline: none;
+      background: rgba(255,255,255,0.08);
+      color: white;
+      font-size: 13px;
+    }
+    .commentInput button {
+      padding: 10px 15px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(45deg, var(--mainColor), #9333ea);
+      color: white;
+      cursor: pointer;
+      width: auto !important;
+      margin-top: 0 !important;
+    }
+    .fabBtn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, var(--mainColor), #9333ea);
+      border: none;
+      color: white;
+      font-size: 28px;
+      cursor: pointer;
+      z-index: 997;
+      box-shadow: 0 4px 20px rgba(59,130,246,0.4);
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 0 !important;
+      width: 56px !important;
+    }
+    .fabBtn:hover {
+      transform: scale(1.1);
+    }
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 1001;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .modal.open {
+      display: flex;
+    }
+    .modalCard {
+      background: #1e293b;
+      border-radius: 20px;
+      padding: 25px;
+      width: 100%;
+      max-width: 500px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .modalCard h2 {
+      color: white;
+      margin-bottom: 15px;
+    }
+    .modalCard textarea {
+      width: 100%;
+      height: 100px;
+      margin-top: 10px;
+    }
+    .modalButtons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .modalButtons button {
+      flex: 1;
+      margin-top: 0 !important;
+    }
+    .btnCancel {
+      background: rgba(255,255,255,0.08) !important;
+      border: 1px solid rgba(255,255,255,0.1) !important;
+    }
+    .followBtn {
+      padding: 5px 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 12px;
+      cursor: pointer;
+      width: auto !important;
+      margin-top: 0 !important;
+      background: linear-gradient(45deg, var(--mainColor), #9333ea);
+      color: white;
+      transition: 0.2s;
+    }
+    .followBtn.following {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .emptyFeed {
+      text-align: center;
+      color: #94a3b8;
+      padding: 60px 20px;
+    }
+    .emptyFeed h2 {
+      color: white;
+      margin-bottom: 10px;
+    }
+
+    .portfolioPreview {
+    position: relative;
+    max-height: 450px;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.previewInner {
+    background: rgba(255,255,255,0.03);
+}
+
+.previewFade {
+    position: absolute;
+    bottom: 60px;
+    left: 0;
+    width: 100%;
+    height: 150px;
+    background: linear-gradient(to bottom, transparent, rgba(15,23,42,0.95));
+    pointer-events: none;
+}
+
+.previewBtn {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 15px;
+    text-align: center;
+    background: rgba(15,23,42,0.95);
+}
+  </style>
+</head>
+<body>
+
+<div class="background"></div>
+
+<!-- Modal Buat Post -->
+<div class="modal" id="modalPost">
+  <div class="modalCard">
+    <h2>Showcase Project 🚀</h2>
+    <p style="color:#94a3b8;font-size:13px;margin-bottom:15px">Pilih project yang ingin kamu showcase</p>
+
+    <div id="projectList" style="display:flex;flex-direction:column;gap:10px;max-height:300px;overflow-y:auto;margin-bottom:15px"></div>
+
+    <div id="projectTerpilih" style="display:none;background:rgba(255,255,255,0.06);border-radius:12px;padding:12px;margin-bottom:15px">
+      <p style="color:#94a3b8;font-size:12px;margin-bottom:5px">Project dipilih:</p>
+      <p id="namaTerpilih" style="color:white;font-weight:bold"></p>
+    </div>
+
+    <textarea id="postCaption" placeholder="Tulis caption untuk project ini..."></textarea>
+
+    <div class="modalButtons">
+      <button class="btnCancel" onclick="tutupModal()">Batal</button>
+      <button onclick="buatPost()">Post 🔥</button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="feedContainer" id="feedContainer">
+    <div class="emptyFeed">
+      <h2>Loading... 🔥</h2>
+    </div>
+  </div>
+</div>
+
+<!-- Tombol + -->
+<button class="fabBtn" onclick="bukaModal()">+</button>
+
+<script>
+let currentUser = null;
+
+async function init(){
+    const res = await fetch("/cek-login");
+    const data = await res.json();
+    if(!data.loggedIn){
+        window.location.href = "/login.html";
+        return;
+    }
+    currentUser = data.user;
+    buatSidebar(data.user.username);
+    loadFeed();
+}
+
+async function loadFeed(){
+    const res = await fetch("/feed");
+    const posts = await res.json();
+    const container = document.getElementById("feedContainer");
+
+    if(posts.length === 0){
+        container.innerHTML = `
+            <div class="emptyFeed">
+                <h2>Belum ada postingan 😢</h2>
+                <p>Jadilah yang pertama posting!</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = "";
+    posts.forEach(post => buatPostCard(post, container));
+}
+
+function buatPostCard(post, container){
+    const card = document.createElement("div");
+    card.classList.add("postCard");
+    card.id = `post-${post.id}`;
+
+    const avatar = post.avatar || "https://via.placeholder.com/42";
+    const isOwner = post.user_id === currentUser.id;
+    const waktu = new Date(post.created_at).toLocaleDateString("id-ID", { day:"numeric", month:"long", year:"numeric" });
+
+    card.innerHTML = `
+        <div class="postHeader">
+            <div class="postHeaderLeft" onclick="window.location.href='/publik.html?user=${post.username}'">
+                <img src="${avatar}" class="postAvatar">
+                <div>
+                    <div class="postUsername">@${post.username}</div>
+                    <div class="postTime">${waktu}</div>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+                ${!isOwner ? `<button class="followBtn ${post.is_following ? 'following' : ''}" id="follow-${post.user_id}" onclick="toggleFollow(${post.user_id})">${post.is_following ? 'Following' : 'Follow'}</button>` : ''}
+                ${isOwner ? `<button onclick="hapusPost(${post.id})" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:18px;width:auto;margin-top:0">🗑️</button>` : ''}
+            </div>
+        </div>
+        <!-- Preview Portofolio -->
+<div class="portfolioPreview">
+    <div class="previewInner">
+        <!-- Header Profil -->
+        <div style="display:flex;flex-direction:column;align-items:center;padding:20px;text-align:center">
+            <img src="${post.avatar || 'https://via.placeholder.com/80'}" 
+                style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.2);margin-bottom:10px">
+            <h3 style="color:white;font-size:18px;margin-bottom:5px">@${post.username}</h3>
+            ${post.tagline ? `<p style="color:#94a3b8;font-size:13px">${post.tagline}</p>` : ""}
+        </div>
+
+        <!-- Bio -->
+        ${post.bio ? `
+        <div style="padding:0 20px 15px;text-align:center">
+            <p style="color:#cbd5e1;font-size:14px;line-height:1.6">${post.bio}</p>
+        </div>` : ""}
+
+        <!-- Skills -->
+        ${post.skills && post.skills.length > 0 ? `
+        <div style="padding:0 20px 15px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
+            ${post.skills.map(s => `<span style="padding:6px 12px;border-radius:20px;background:linear-gradient(45deg,var(--mainColor),#9333ea);color:white;font-size:12px">${s}</span>`).join('')}
+        </div>` : ""}
+
+        <!-- Preview Project Pertama -->
+        ${post.project_image ? `
+        <div style="padding:0 20px 15px">
+            <div style="border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.1)">
+                <img src="${post.project_image}" style="width:100%;max-height:200px;object-fit:cover">
+                <div style="padding:12px;background:rgba(255,255,255,0.04)">
+                    <p style="color:white;font-weight:bold;font-size:14px">📁 ${post.project_name}</p>
+                    <p style="color:#94a3b8;font-size:12px;margin-top:4px">${post.project_desc ? post.project_desc.substring(0,80)+'...' : ''}</p>
+                </div>
+            </div>
+        </div>` : ""}
+    </div>
+
+    <!-- Fade Effect -->
+    <div class="previewFade"></div>
+
+    <!-- Tombol Lihat Lengkap -->
+    <div class="previewBtn">
+        <button onclick="window.location.href='/publik.html?user=${post.username}'" 
+            style="background:linear-gradient(45deg,var(--mainColor),#9333ea);border:none;color:white;padding:10px 25px;border-radius:12px;cursor:pointer;font-size:14px;width:auto;margin-top:0">
+            Lihat Portofolio Lengkap 👀
+        </button>
+        <p style="color:#94a3b8;font-size:12px;margin-top:8px">
+            🔗 ${window.location.origin}/publik.html?user=${post.username}
+        </p>
+    </div>
+</div>
+${post.caption ? `<div class="postCaption">💬 ${post.caption}</div>` : ""}
+        <div class="postActions">
+            <button class="actionBtn ${post.sudah_like ? 'liked' : ''}" id="like-${post.id}" onclick="toggleLike(${post.id})">
+                ${post.sudah_like ? '❤️' : '🤍'} <span id="like-count-${post.id}">${post.like_count}</span>
+            </button>
+            <button class="actionBtn" onclick="toggleKomentar(${post.id})">
+                💬 <span id="comment-count-${post.id}">${post.comment_count}</span>
+            </button>
+            <button class="actionBtn" onclick="sharePost(${post.id})">
+                🔗 Share
+            </button>
+        </div>
+        <div class="commentSection" id="comments-${post.id}">
+            <div id="comment-list-${post.id}"></div>
+            <div class="commentInput">
+                <input type="text" id="comment-input-${post.id}" placeholder="Tulis komentar...">
+                <button onclick="kirimKomentar(${post.id})">Kirim</button>
+            </div>
+        </div>
+    `;
+
+    container.appendChild(card);
+}
+
+async function toggleLike(post_id){
+    const res = await fetch(`/like/${post_id}`, { method: "POST" });
+    const data = await res.json();
+
+    const btn = document.getElementById(`like-${post_id}`);
+    const count = document.getElementById(`like-count-${post_id}`);
+    const current = parseInt(count.innerText);
+
+    if(data.liked){
+        btn.classList.add("liked");
+        btn.innerHTML = `❤️ <span id="like-count-${post_id}">${current + 1}</span>`;
+    } else {
+        btn.classList.remove("liked");
+        btn.innerHTML = `🤍 <span id="like-count-${post_id}">${current - 1}</span>`;
+    }
+}
+
+async function toggleKomentar(post_id){
+    const section = document.getElementById(`comments-${post_id}`);
+    section.classList.toggle("open");
+
+    if(section.classList.contains("open")){
+        loadKomentar(post_id);
+    }
+}
+
+async function loadKomentar(post_id){
+    const res = await fetch(`/komentar/${post_id}`);
+    const comments = await res.json();
+    const list = document.getElementById(`comment-list-${post_id}`);
+    list.innerHTML = "";
+
+    if(comments.length === 0){
+        list.innerHTML = `<p style="color:#94a3b8;font-size:13px;text-align:center">Belum ada komentar</p>`;
+        return;
+    }
+
+    comments.forEach(c => {
+        const avatar = c.avatar || "https://via.placeholder.com/32";
+        const div = document.createElement("div");
+        div.classList.add("commentItem");
+        div.innerHTML = `
+            <img src="${avatar}" class="commentAvatar">
+            <div class="commentBubble">
+                <div class="commentUser">@${c.username}</div>
+                <div class="commentText">${c.comment}</div>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+}
+
+async function kirimKomentar(post_id){
+    const input = document.getElementById(`comment-input-${post_id}`);
+    const comment = input.value.trim();
+    if(!comment) return;
+
+    await fetch(`/komentar/${post_id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ comment })
+    });
+
+    input.value = "";
+    loadKomentar(post_id);
+
+    const count = document.getElementById(`comment-count-${post_id}`);
+    count.innerText = parseInt(count.innerText) + 1;
+}
+
+async function toggleFollow(target_id){
+    const res = await fetch(`/follow/${target_id}`, { method: "POST" });
+    const data = await res.json();
+    const btn = document.getElementById(`follow-${target_id}`);
+    if(data.following){
+        btn.innerText = "Following";
+        btn.classList.add("following");
+    } else {
+        btn.innerText = "Follow";
+        btn.classList.remove("following");
+    }
+}
+
+async function hapusPost(id){
+    const konfirmasi = confirm("Yakin mau hapus postingan ini?");
+    if(!konfirmasi) return;
+    await fetch(`/hapus-post/${id}`, { method: "DELETE" });
+    document.getElementById(`post-${id}`).remove();
+}
+
+function sharePost(id){
+    const link = `${window.location.origin}/feed.html#post-${id}`;
+    navigator.clipboard.writeText(link);
+    alert("Link postingan tersalin! 🔥");
+}
+
+let selectedProjectId = null;
+
+function bukaModal(){
+    document.getElementById("modalPost").classList.add("open");
+    loadProjectSaya();
+}
+
+function tutupModal(){
+    document.getElementById("modalPost").classList.remove("open");
+    document.getElementById("postCaption").value = "";
+    document.getElementById("projectList").innerHTML = "";
+    document.getElementById("projectTerpilih").style.display = "none";
+    selectedProjectId = null;
+}
+
+async function loadProjectSaya(){
+    const res = await fetch("/project-saya");
+    const projects = await res.json();
+    const list = document.getElementById("projectList");
+    list.innerHTML = "";
+
+    if(projects.length === 0){
+        list.innerHTML = `<p style="color:#94a3b8;text-align:center">Belum ada project! Tambah dulu di dashboard.</p>`;
+        return;
+    }
+
+    projects.forEach(p => {
+        const div = document.createElement("div");
+        div.style.cssText = "display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);cursor:pointer;transition:0.2s";
+        div.innerHTML = `
+            ${p.project_image ? `<img src="${p.project_image}" style="width:50px;height:50px;border-radius:8px;object-fit:cover">` : `<div style="width:50px;height:50px;border-radius:8px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:20px">📁</div>`}
+            <div>
+                <p style="color:white;font-weight:bold;font-size:14px">${p.project_name}</p>
+                <p style="color:#94a3b8;font-size:12px">${p.project_desc ? p.project_desc.substring(0,50)+'...' : ''}</p>
+            </div>
+        `;
+        div.onclick = () => pilihProject(p.id, p.project_name, div);
+        list.appendChild(div);
+    });
+}
+
+function pilihProject(id, nama, el){
+    selectedProjectId = id;
+    document.getElementById("namaTerpilih").innerText = nama;
+    document.getElementById("projectTerpilih").style.display = "block";
+
+    // Highlight yang dipilih
+    document.querySelectorAll("#projectList > div").forEach(d => {
+        d.style.borderColor = "rgba(255,255,255,0.1)";
+        d.style.background = "transparent";
+    });
+    el.style.borderColor = "var(--mainColor)";
+    el.style.background = "rgba(59,130,246,0.1)";
+}
+
+async function buatPost(){
+    const caption = document.getElementById("postCaption").value;
+
+    if(!selectedProjectId){
+        alert("Pilih project dulu!");
+        return;
+    }
+
+    const res = await fetch("/buat-post", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ caption, project_id: selectedProjectId })
+    });
+
+    const data = await res.text();
+    if(data.includes("berhasil")){
+        tutupModal();
+        loadFeed();
+    }
+}
+
+init();
+</script>
+
+</body>
+</html>

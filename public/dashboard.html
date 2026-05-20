@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="sidebar.js"></script>
+</head>
+<body>
+
+<div class="background"></div>
+
+<div class="container">
+  <div class="card">
+
+    <h1 id="welcomeText"></h1>
+
+    <img id="profilePic" src="https://via.placeholder.com/120" class="profile">
+    <input type="file" id="uploadPic" hidden>
+    <button onclick="chooseImage()">Upload Profile</button>
+
+    <textarea id="bioInput" placeholder="Tulis bio keren lu..."></textarea>
+    <button onclick="saveBio()">Save Bio</button>
+    <p id="bioText"></p>
+
+    <input type="text" id="skillInput" placeholder="Masukkan skill">
+    <button onclick="addSkill()">Add Skill</button>
+    <div id="skillContainer"></div>
+
+    <h2 class="projectTitle">My Projects 🚀</h2>
+    <input type="text" id="projectName" placeholder="Nama project">
+    <textarea id="projectDesc" placeholder="Deskripsi project"></textarea>
+    <input type="file" id="projectImage" hidden accept="image/*">
+<button onclick="document.getElementById('projectImage').click()" id="projectImageBtn">
+    📁 Pilih Gambar Project
+</button>
+<p id="projectImageLabel" style="color:#94a3b8;text-align:center;font-size:13px">
+    Belum ada gambar dipilih
+</p>
+    <button onclick="addProject()">Add Project</button>
+    <div id="projectContainer"></div>
+
+    <h2 class="projectTitle">Social Links 🌐</h2>
+    <input type="text" id="socialName" placeholder="Nama sosial media">
+    <input type="text" id="socialLink" placeholder="Link sosial media">
+    <button onclick="addSocial()">Add Social</button>
+    <div id="socialContainer"></div>
+
+    <h2 class="projectTitle">Choose Theme 🎨</h2>
+<div style="background:rgba(255,255,255,0.06);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:15px">
+    
+    <!-- Preview Gradient -->
+    <div id="gradientPreview" style="width:100%;height:50px;border-radius:12px;background:linear-gradient(45deg,#3b82f6,#9333ea);transition:0.3s"></div>
+
+    <!-- Warna 1 & 2 -->
+    <div style="display:flex;gap:15px;justify-content:center;align-items:center">
+        <div style="text-align:center">
+            <p style="color:#94a3b8;font-size:12px;margin-bottom:8px">Warna 1</p>
+            <input type="color" id="color1" value="#3b82f6"
+                style="width:55px;height:55px;border-radius:50%;border:none;cursor:pointer;padding:0;background:none">
+        </div>
+        <p style="color:white;font-size:20px">→</p>
+        <div style="text-align:center">
+            <p style="color:#94a3b8;font-size:12px;margin-bottom:8px">Warna 2</p>
+            <input type="color" id="color2" value="#9333ea"
+                style="width:55px;height:55px;border-radius:50%;border:none;cursor:pointer;padding:0;background:none">
+        </div>
+    </div>
+
+    <!-- Arah Gradient -->
+    <div>
+        <p style="color:#94a3b8;font-size:12px;margin-bottom:8px;text-align:center">Arah Gradient</p>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+            <button class="arahBtn" onclick="setArah('to right')" id="arah-to right">→ Horizontal</button>
+<button class="arahBtn" onclick="setArah('to bottom')" id="arah-to bottom">↓ Vertikal</button>
+<button class="arahBtn" onclick="setArah('45deg')" id="arah-45deg">↗ Diagonal</button>
+<button class="arahBtn" onclick="setArah('135deg')" id="arah-135deg">↘ Diagonal 2</button>
+        </div>
+    </div>
+    <button onclick="simpanTheme()" style="margin-top:0">Simpan Theme 🎨</button>
+</div>
+
+    <button onclick="viewPortfolio()">View Portfolio 👀</button>
+    <button onclick="window.location.href='/cari.html'">Cari Portfolio 🔍</button>
+    <button onclick="sharePortfolio()">Share Portfolio 🔗</button>
+    <button class="logoutBtn" onclick="logout()">Logout</button>
+
+  </div>
+</div>
+
+<script>
+let currentUser = null;
+
+// Ambil data user yang sedang login
+async function init(){
+    const res = await fetch("/cek-login");
+    const data = await res.json();
+
+    if(!data.loggedIn){
+        window.location.href = "/login.html";
+        return;
+    }
+
+    currentUser = data.user;
+    document.getElementById("welcomeText").innerText = `WELCOME ${currentUser.username.toUpperCase()} 🔥`;
+    buatSidebar(currentUser.username);
+
+    loadPortfolio();
+}
+
+// Load semua data dari database
+async function loadPortfolio(){
+    const res = await fetch("/ambil-portfolio");
+    const data = await res.json();
+
+    // Bio
+    if(data.portfolio.bio){
+        document.getElementById("bioText").innerText = data.portfolio.bio;
+        document.getElementById("bioInput").value = data.portfolio.bio;
+    }
+
+    // Theme
+    
+if(data.portfolio.theme_gradient){
+    document.documentElement.style.setProperty("--mainGradient", data.portfolio.theme_gradient);
+    document.getElementById("gradientPreview").style.background = data.portfolio.theme_gradient;
+}
+
+    // Profile pic dari database
+if(data.portfolio.profile_image){
+    document.getElementById("profilePic").src = data.portfolio.profile_image;
+}
+
+    // Skills
+    data.skills.forEach(skill => createSkill(skill.skill_name, skill.id));
+
+    // Projects
+    data.projects.forEach(project => createProject(project.project_name, project.project_desc, project.project_image, project.id));
+
+    // Socials
+    data.socials.forEach(social => createSocial(social.social_name, social.social_link, social.id));
+}
+
+// Profile pic
+function chooseImage(){
+    document.getElementById("uploadPic").click();
+}
+
+document.getElementById("uploadPic").addEventListener("change", function(){
+    const file = this.files[0];
+    const reader = new FileReader();
+    reader.onload = async function(){
+        document.getElementById("profilePic").src = reader.result;
+
+        // Simpan ke database
+        await fetch("/simpan-foto", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ profile_image: reader.result })
+        });
+    }
+    reader.readAsDataURL(file);
+});
+
+// Bio
+async function saveBio(){
+    const bio = document.getElementById("bioInput").value;
+    const res = await fetch("/simpan-bio", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bio })
+    });
+    const data = await res.text();
+    document.getElementById("bioText").innerText = bio;
+    alert(data);
+}
+
+// Skill
+async function addSkill(){
+    const skillInput = document.getElementById("skillInput");
+    const skill = skillInput.value.trim();
+    if(skill === "") return;
+
+    const res = await fetch("/tambah-skill", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ skill_name: skill })
+    });
+
+    await loadSkills();
+    skillInput.value = "";
+}
+
+async function loadSkills(){
+    const res = await fetch("/ambil-portfolio");
+    const data = await res.json();
+    document.getElementById("skillContainer").innerHTML = "";
+    data.skills.forEach(skill => createSkill(skill.skill_name, skill.id));
+}
+
+function createSkill(skill, id){
+    const div = document.createElement("div");
+    div.classList.add("skill");
+    div.innerHTML = `${skill} <span onclick="hapusSkill(${id})" style="cursor:pointer;margin-left:8px">❌</span>`;
+    document.getElementById("skillContainer").appendChild(div);
+}
+
+async function hapusSkill(id){
+    await fetch(`/hapus-skill/${id}`, { method: "DELETE" });
+    await loadSkills();
+}
+
+// Project
+async function addProject(){
+    const name = document.getElementById("projectName").value;
+    const desc = document.getElementById("projectDesc").value;
+    const imageFile = document.getElementById("projectImage").files[0];
+
+    if(name.trim() === "" || desc.trim() === "") return;
+
+    const reader = new FileReader();
+    reader.onload = async function(){
+        const res = await fetch("/tambah-project", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ project_name: name, project_desc: desc, project_image: reader.result })
+        });
+        await loadProjects();
+        document.getElementById("projectName").value = "";
+        document.getElementById("projectDesc").value = "";
+    }
+
+    if(imageFile){
+        reader.readAsDataURL(imageFile);
+    } else {
+        await fetch("/tambah-project", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ project_name: name, project_desc: desc, project_image: "" })
+        });
+        await loadProjects();
+        document.getElementById("projectName").value = "";
+        document.getElementById("projectDesc").value = "";
+    }
+}
+
+async function loadProjects(){
+    const res = await fetch("/ambil-portfolio");
+    const data = await res.json();
+    document.getElementById("projectContainer").innerHTML = "";
+    data.projects.forEach(p => createProject(p.project_name, p.project_desc, p.project_image, p.id));
+}
+
+function createProject(name, desc, image, id){
+    const card = document.createElement("div");
+    card.classList.add("projectCard");
+    card.innerHTML = `
+        ${image ? `<img src="${image}" class="projectImage">` : ""}
+        <h3>${name}</h3>
+        <p>${desc}</p>
+        <button onclick="hapusProject(${id})" style="width:auto;padding:8px 15px;margin-top:10px">Hapus ❌</button>
+    `;
+    document.getElementById("projectContainer").appendChild(card);
+}
+
+async function hapusProject(id){
+    await fetch(`/hapus-project/${id}`, { method: "DELETE" });
+    await loadProjects();
+}
+
+// Sosial
+async function addSocial(){
+    const name = document.getElementById("socialName").value;
+    const link = document.getElementById("socialLink").value;
+    if(name.trim() === "" || link.trim() === "") return;
+
+    await fetch("/tambah-sosial", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ social_name: name, social_link: link })
+    });
+
+    await loadSocials();
+    document.getElementById("socialName").value = "";
+    document.getElementById("socialLink").value = "";
+}
+
+async function loadSocials(){
+    const res = await fetch("/ambil-portfolio");
+    const data = await res.json();
+    document.getElementById("socialContainer").innerHTML = "";
+    data.socials.forEach(s => createSocial(s.social_name, s.social_link, s.id));
+}
+
+function createSocial(name, link, id){
+    const div = document.createElement("div");
+    div.classList.add("socialCard");
+    div.innerHTML = `
+        <a href="${link}" target="_blank">${name}</a>
+        <span onclick="hapusSosial(${id})" style="cursor:pointer;float:right">❌</span>
+    `;
+    document.getElementById("socialContainer").appendChild(div);
+}
+
+async function hapusSosial(id){
+    await fetch(`/hapus-sosial/${id}`, { method: "DELETE" });
+    await loadSocials();
+}
+
+let selectedArah = '45deg';
+
+function setArah(arah){
+    selectedArah = arah;
+    updatePreview();
+
+    // Highlight tombol yang dipilih
+    ['to right', 'to bottom', '45deg', '135deg'].forEach(a => {
+        const btn = document.getElementById(`arah-${a}`);
+        if(btn){
+            btn.style.background = a === arah ? 'linear-gradient(45deg,var(--mainColor),#9333ea)' : 'rgba(255,255,255,0.1)';
+            btn.style.border = a === arah ? 'none' : '1px solid rgba(255,255,255,0.2)';
+            btn.style.color = 'white';
+        }
+    });
+}
+
+function updatePreview(){
+    const c1 = document.getElementById("color1").value;
+    const c2 = document.getElementById("color2").value;
+    const gradient = `linear-gradient(${selectedArah}, ${c1}, ${c2})`;
+    document.getElementById("gradientPreview").style.background = gradient;
+    document.documentElement.style.setProperty("--mainColor", c1);
+}
+
+document.getElementById("color1").addEventListener("input", updatePreview);
+document.getElementById("color2").addEventListener("input", updatePreview);
+
+async function simpanTheme(){
+    const c1 = document.getElementById("color1").value;
+    const c2 = document.getElementById("color2").value;
+    const gradient = `linear-gradient(${selectedArah}, ${c1}, ${c2})`;
+
+    // Terapkan langsung ke semua elemen
+    document.documentElement.style.setProperty("--mainColor", c1);
+    document.documentElement.style.setProperty("--mainGradient", gradient);
+
+    await fetch("/simpan-bio", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+            bio: document.getElementById("bioInput").value, 
+            theme_color: c1,
+            theme_gradient: gradient
+        })
+    });
+    alert("Theme tersimpan 🎨");
+}
+
+function viewPortfolio(){
+    window.location.href = "/portfolio.html";
+}
+
+document.getElementById("projectImage").addEventListener("change", function(){
+    const fileName = this.files[0] ? this.files[0].name : "Belum ada gambar dipilih";
+    document.getElementById("projectImageLabel").innerText = "✅ " + fileName;
+});
+
+function sharePortfolio(){
+    const link = `${window.location.origin}/publik.html?user=${currentUser.username}`;
+    navigator.clipboard.writeText(link);
+    alert("Link portofolio tersalin! 🔥\n" + link);
+}
+
+
+function logout(){
+    window.location.href = "/logout";
+}
+
+init();
+</script>
+
+</body>
+</html>

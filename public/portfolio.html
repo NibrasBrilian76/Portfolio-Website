@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Portfolio</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="sidebar.js"></script>
+</head>
+<body>
+
+<div id="loader">
+  <h1>Loading Portfolio... 🔥</h1>
+</div>
+
+<div class="background"></div>
+
+<div class="container">
+  <div class="card">
+
+    <img id="portfolioImage" src="https://via.placeholder.com/120" class="profile">
+
+    <h1 id="portfolioUsername"></h1>
+
+    <p id="portfolioBio"></p>
+
+    <div class="stats">
+      <div class="statBox">
+        <h2 id="skillCount">0</h2>
+        <p>Skills</p>
+      </div>
+      <div class="statBox">
+        <h2 id="projectCount">0</h2>
+        <p>Projects</p>
+      </div>
+      <div class="statBox">
+        <h2 id="socialCount">0</h2>
+        <p>Socials</p>
+      </div>
+    </div>
+
+    <div id="portfolioSkills"></div>
+
+    <div id="portfolioProjects"></div>
+
+    <div id="portfolioSocials"></div>
+
+    <button onclick="window.location.href='/dashboard.html'">
+      Edit Portfolio ✏️
+    </button>
+
+  </div>
+</div>
+
+<script>
+async function loadPortfolio(){
+    const res = await fetch("/ambil-portfolio");
+    const data = await res.json();
+
+    // Username dari cek-login
+    const loginRes = await fetch("/cek-login");
+    const loginData = await loginRes.json();
+
+    if(!loginData.loggedIn){
+        window.location.href = "/login.html";
+        return;
+    }
+
+    const username = loginData.user.username;
+    buatSidebar(loginData.user.username);
+
+    // Typing effect untuk username
+    let i = 0;
+    function typing(){
+        if(i < username.length){
+            document.getElementById("portfolioUsername").innerHTML += username.charAt(i);
+            i++;
+            setTimeout(typing, 100);
+        }
+    }
+    typing();
+
+    // Bio
+    if(data.portfolio.bio){
+        document.getElementById("portfolioBio").innerText = data.portfolio.bio;
+    }
+
+    // Theme
+    if(data.portfolio.theme_color){
+    document.documentElement.style.setProperty("--mainColor", data.portfolio.theme_color);
+}
+if(data.portfolio.theme_gradient){
+    document.documentElement.style.setProperty("--mainGradient", data.portfolio.theme_gradient);
+}
+
+console.log("theme_gradient:", data.portfolio.theme_gradient);
+console.log("theme_color:", data.portfolio.theme_color);
+
+    if(data.portfolio.profile_image){
+    document.getElementById("portfolioImage").src = data.portfolio.profile_image;
+}
+
+    // Stats
+    document.getElementById("skillCount").innerText = data.skills.length;
+    document.getElementById("projectCount").innerText = data.projects.length;
+    document.getElementById("socialCount").innerText = data.socials.length;
+
+    // Skills
+    const skillContainer = document.getElementById("portfolioSkills");
+    data.skills.forEach(skill => {
+        const div = document.createElement("div");
+        div.classList.add("skill");
+        div.innerText = skill.skill_name;
+        skillContainer.appendChild(div);
+    });
+
+    // Projects
+    const projectContainer = document.getElementById("portfolioProjects");
+    data.projects.forEach(project => {
+    const div = document.createElement("div");
+    div.classList.add("projectCard");
+    div.innerHTML = `
+        ${project.project_image ? `<img src="${project.project_image}" class="projectImage">` : ""}
+        <h3 id="nama-${project.id}">${project.project_name}</h3>
+        <p id="desc-${project.id}">${project.project_desc}</p>
+        <div style="display:flex;gap:10px;margin-top:10px">
+            <button onclick="editProject(${project.id})"
+                style="width:auto;padding:8px 15px">
+                Edit ✏️
+            </button>
+            <button onclick="hapusProject(${project.id})"
+                style="width:auto;padding:8px 15px;background:linear-gradient(45deg,#ef4444,#dc2626)">
+                Hapus 🗑️
+            </button>
+        </div>
+    `;
+    projectContainer.appendChild(div);
+});
+
+    // Socials
+    const socialContainer = document.getElementById("portfolioSocials");
+    data.socials.forEach(social => {
+        const div = document.createElement("div");
+        div.classList.add("socialCard");
+        div.innerHTML = `<a href="${social.social_link}" target="_blank">${social.social_name}</a>`;
+        socialContainer.appendChild(div);
+    });
+
+    // Sembunyikan loader
+    setTimeout(() => {
+        document.getElementById("loader").style.display = "none";
+    }, 1000);
+}
+
+async function editProject(id){
+    const namaBaru = prompt("Nama project baru:", document.getElementById(`nama-${id}`).innerText);
+    if(namaBaru === null) return;
+
+    const descBaru = prompt("Deskripsi baru:", document.getElementById(`desc-${id}`).innerText);
+    if(descBaru === null) return;
+
+    const res = await fetch(`/edit-project/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ project_name: namaBaru, project_desc: descBaru })
+    });
+
+    const data = await res.text();
+    alert(data);
+    location.reload();
+}
+
+async function hapusProject(id){
+    const konfirmasi = confirm("Yakin mau hapus project ini?");
+    if(!konfirmasi) return;
+
+    await fetch(`/hapus-project/${id}`, { method: "DELETE" });
+    alert("Project dihapus! 🗑️");
+    location.reload();
+}
+
+loadPortfolio();
+</script>
+
+</body>
+</html>

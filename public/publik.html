@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div style="position:fixed;top:70px;left:20px;z-index:100">
+    <button onclick="history.back()" 
+        style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:10px 18px;border-radius:12px;cursor:pointer;backdrop-filter:blur(10px);font-size:14px;width:auto;margin-top:0">
+        ← Kembali
+    </button>
+</div>
+
+<div id="loader">
+  <h1>Loading Portfolio... 🔥</h1>
+</div>
+
+<div class="background"></div>
+
+<div class="container">
+  <div class="card">
+
+    <img id="portfolioImage" src="https://via.placeholder.com/120" class="profile">
+
+    <h1 id="portfolioUsername"></h1>
+
+    <p id="portfolioBio"></p>
+
+    <div class="stats">
+      <div class="statBox">
+        <h2 id="skillCount">0</h2>
+        <p>Skills</p>
+      </div>
+      <div class="statBox">
+        <h2 id="projectCount">0</h2>
+        <p>Projects</p>
+      </div>
+      <div class="statBox">
+        <h2 id="socialCount">0</h2>
+        <p>Socials</p>
+      </div>
+    </div>
+
+    <div id="portfolioSkills"></div>
+
+    <div id="portfolioProjects"></div>
+
+    <div id="portfolioSocials"></div>
+
+    <button onclick="copyLink()">Copy Portfolio Link 🔗</button>
+
+  </div>
+</div>
+
+<script>
+// Ambil username dari URL: /publik.html?user=nibras
+const params = new URLSearchParams(window.location.search);
+const username = params.get("user");
+
+if(!username){
+    document.body.innerHTML = "<h1 style='color:white;text-align:center;margin-top:100px'>User tidak ditemukan</h1>";
+}
+
+async function loadPortfolio(){
+    const res = await fetch(`/user/${username}`);
+    const data = await res.json();
+
+    if(!data.username){
+        document.body.innerHTML = "<h1 style='color:white;text-align:center;margin-top:100px'>User tidak ditemukan</h1>";
+        return;
+    }
+
+    // Theme
+    if(data.portfolio.theme_color){
+        document.documentElement.style.setProperty("--mainGradient", data.portfolio.theme_color);
+    }
+
+    // Typing username
+    let i = 0;
+    function typing(){
+        if(i < data.username.length){
+            document.getElementById("portfolioUsername").innerHTML += data.username.charAt(i);
+            i++;
+            setTimeout(typing, 100);
+        }
+    }
+    typing();
+
+    // Bio
+    if(data.portfolio.bio){
+        document.getElementById("portfolioBio").innerText = data.portfolio.bio;
+    }
+
+    // Foto profil
+if(data.portfolio.profile_image){
+    document.getElementById("portfolioImage").src = data.portfolio.profile_image;
+}
+
+    // Stats
+    document.getElementById("skillCount").innerText = data.skills.length;
+    document.getElementById("projectCount").innerText = data.projects.length;
+    document.getElementById("socialCount").innerText = data.socials.length;
+
+    // Skills
+    const skillContainer = document.getElementById("portfolioSkills");
+    data.skills.forEach(skill => {
+        const div = document.createElement("div");
+        div.classList.add("skill");
+        div.innerText = skill.skill_name;
+        skillContainer.appendChild(div);
+    });
+
+    // Projects
+    const projectContainer = document.getElementById("portfolioProjects");
+    data.projects.forEach(project => {
+        const div = document.createElement("div");
+        div.classList.add("projectCard");
+        div.innerHTML = `
+            ${project.project_image ? `<img src="${project.project_image}" class="projectImage">` : ""}
+            <h3>${project.project_name}</h3>
+            <p>${project.project_desc}</p>
+        `;
+        projectContainer.appendChild(div);
+    });
+
+    // Socials
+    const socialContainer = document.getElementById("portfolioSocials");
+    data.socials.forEach(social => {
+        const div = document.createElement("div");
+        div.classList.add("socialCard");
+        div.innerHTML = `<a href="${social.social_link}" target="_blank">${social.social_name}</a>`;
+        socialContainer.appendChild(div);
+    });
+
+    // Sembunyikan loader
+    setTimeout(() => {
+        document.getElementById("loader").style.display = "none";
+    }, 1000);
+}
+
+function copyLink(){
+    navigator.clipboard.writeText(window.location.href);
+    alert("Link tersalin! 🔥");
+}
+
+loadPortfolio();
+</script>
+
+</body>
+</html>

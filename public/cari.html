@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cari Portfolio</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="sidebar.js"></script>
+</head>
+<body>
+
+<div class="background"></div>
+
+<div class="container">
+  <div class="card">
+
+    <h1>Cari Portfolio 🔍</h1>
+    <p class="subtitle">Cari berdasarkan username atau skill</p>
+
+    <input type="text" id="searchInput" placeholder="Contoh: nibras atau javascript">
+    <button onclick="cari()">Cari 🔍</button>
+
+    <p id="searchMessage" style="color:white;text-align:center;margin-top:10px"></p>
+
+    <div id="hasilCari"></div>
+
+    <button onclick="window.location.href='/dashboard.html'" style="margin-top:20px">
+      Kembali ke Dashboard
+    </button>
+
+  </div>
+</div>
+
+<script>
+async function cari(){
+    const keyword = document.getElementById("searchInput").value.trim();
+
+    if(keyword === ""){
+        document.getElementById("searchMessage").innerText = "Masukkan kata kunci dulu!";
+        return;
+    }
+
+    document.getElementById("searchMessage").innerText = "Mencari...";
+    document.getElementById("hasilCari").innerHTML = "";
+
+    const res = await fetch(`/cari?keyword=${encodeURIComponent(keyword)}`);
+    const data = await res.json();
+
+    if(data.length === 0){
+        document.getElementById("searchMessage").innerText = "Tidak ada hasil ditemukan 😢";
+        return;
+    }
+
+    document.getElementById("searchMessage").innerText = `${data.length} hasil ditemukan 🔥`;
+
+    const container = document.getElementById("hasilCari");
+
+    data.forEach(user => {
+        const card = document.createElement("div");
+        card.classList.add("projectCard");
+        card.style.cursor = "pointer";
+        card.innerHTML = `
+            <h3>@${user.username}</h3>
+            <p>${user.bio || "Belum ada bio"}</p>
+            <button onclick="window.location.href='/publik.html?user=${user.username}'"
+                style="width:auto;padding:8px 15px;margin-top:10px">
+                Lihat Portfolio 👀
+            </button>
+        `;
+        container.appendChild(card);
+    });
+}
+
+// Bisa pencet Enter untuk cari
+document.getElementById("searchInput").addEventListener("keypress", function(e){
+    if(e.key === "Enter") cari();
+});
+</script>
+<script>
+async function initSidebar(){
+    const res = await fetch("/cek-login");
+    const data = await res.json();
+    if(data.loggedIn){
+        buatSidebar(data.user.username);
+    }
+}
+initSidebar();
+</script>
+</body>
+</html>

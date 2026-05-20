@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PortfolioHub 🔥</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .hero {
+      text-align: center;
+      padding: 60px 20px 40px;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      color: white;
+      margin-bottom: 15px;
+      line-height: 1.2;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(45deg, var(--mainColor), #9333ea);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      color: #cbd5e1;
+      font-size: 18px;
+      margin-bottom: 35px;
+      line-height: 1.6;
+    }
+
+    .heroButtons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btnPrimary {
+      padding: 15px 35px;
+      border: none;
+      border-radius: 15px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      background: linear-gradient(45deg, var(--mainColor), #9333ea);
+      transition: 0.3s;
+      width: auto !important;
+      margin-top: 0 !important;
+    }
+
+    .btnPrimary:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(59,130,246,0.5);
+    }
+
+    .btnSecondary {
+      padding: 15px 35px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 15px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.08);
+      transition: 0.3s;
+      width: auto !important;
+      margin-top: 0 !important;
+    }
+
+    .btnSecondary:hover {
+      transform: scale(1.05);
+      background: rgba(255,255,255,0.15);
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 50px;
+    }
+
+    .featureCard {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 25px 20px;
+      text-align: center;
+      transition: 0.3s;
+    }
+
+    .featureCard:hover {
+      transform: translateY(-5px);
+      background: rgba(255,255,255,0.1);
+    }
+
+    .featureIcon {
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+
+    .featureCard h3 {
+      color: white;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .featureCard p {
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .sectionTitle {
+      color: white;
+      text-align: center;
+      font-size: 28px;
+      margin-top: 60px;
+      margin-bottom: 30px;
+    }
+
+    .cta {
+      text-align: center;
+      margin-top: 60px;
+      padding: 40px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 25px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .cta h2 {
+      color: white;
+      font-size: 28px;
+      margin-bottom: 15px;
+    }
+
+    .cta p {
+      color: #94a3b8;
+      margin-bottom: 25px;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 30px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .navLogo {
+      color: white;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .navLogo span {
+      background: linear-gradient(45deg, var(--mainColor), #9333ea);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .navButtons {
+      display: flex;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="background"></div>
+
+<!-- Navbar -->
+<div class="navbar">
+  <div class="navLogo">Portfolio<span>Hub</span> 🔥</div>
+  <div class="navButtons">
+    <button class="btnSecondary" onclick="window.location.href='/login.html'">Login</button>
+    <button class="btnPrimary" onclick="window.location.href='/index.html'">Register</button>
+  </div>
+</div>
+
+<div class="container">
+  <div style="width:100%;max-width:800px">
+
+    <!-- Hero -->
+    <div class="hero">
+      <h1>Buat Portofoliomu<br><span>Yang Keren & Profesional</span></h1>
+      <p>Platform gratis untuk menampilkan skill, project, dan pengalaman kamu.<br>Dibuat dalam hitungan menit, bisa dibagikan ke siapapun.</p>
+      <div class="heroButtons">
+        <button class="btnPrimary" onclick="window.location.href='/index.html'">Mulai Sekarang 🚀</button>
+        <button class="btnSecondary" onclick="window.location.href='/cari.html'">Lihat Portfolio Orang 👀</button>
+      </div>
+    </div>
+
+    <!-- Fitur -->
+    <h2 class="sectionTitle">Kenapa PortfolioHub? ✨</h2>
+    <div class="features">
+
+      <div class="featureCard">
+        <div class="featureIcon">🎨</div>
+        <h3>Custom Theme</h3>
+        <p>Pilih warna tema sesuai kepribadianmu</p>
+      </div>
+
+      <div class="featureCard">
+        <div class="featureIcon">🚀</div>
+        <h3>Tambah Project</h3>
+        <p>Upload foto dan deskripsi project-projectmu</p>
+      </div>
+
+      <div class="featureCard">
+        <div class="featureIcon">🌐</div>
+        <h3>Link Sosial Media</h3>
+        <p>Hubungkan Instagram, LinkedIn, GitHub dan lainnya</p>
+      </div>
+
+      <div class="featureCard">
+        <div class="featureIcon">🔍</div>
+        <h3>Bisa Dicari</h3>
+        <p>Orang bisa menemukan portofoliomu lewat pencarian</p>
+      </div>
+
+      <div class="featureCard">
+        <div class="featureIcon">🔗</div>
+        <h3>Link Unik</h3>
+        <p>Setiap user punya link portofolio sendiri</p>
+      </div>
+
+      <div class="featureCard">
+        <div class="featureIcon">🔒</div>
+        <h3>Aman</h3>
+        <p>Password terenkripsi dan data tersimpan di database</p>
+      </div>
+
+    </div>
+
+    <!-- CTA -->
+    <div class="cta">
+      <h2>Siap Bikin Portofoliomu? 🔥</h2>
+      <p>Gratis, mudah, dan keren. Daftar sekarang dan mulai dalam 2 menit!</p>
+      <button class="btnPrimary" onclick="window.location.href='/index.html'">Daftar Gratis 🚀</button>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
