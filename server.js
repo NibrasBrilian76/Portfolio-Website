@@ -7,7 +7,6 @@ const bcrypt = require("bcrypt");
 const session = require("express-session");
 const MySQLStore = require("express-mysql-session")(session);
 
-const sessionStore = new MySQLStore({}, db);
 
 const app = express();
 
@@ -34,6 +33,8 @@ db.connect((err) => {
         console.log("Database connect 🔥");
     }
 });
+
+const sessionStore = new MySQLStore({}, db);
 
 function requireLogin(req, res, next){
     if(req.session.user){
