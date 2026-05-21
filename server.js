@@ -7,12 +7,7 @@ const bcrypt = require("bcrypt");
 const session = require("express-session");
 const MySQLStore = require("express-mysql-session")(session);
 
-const sessionStore = new MySQLStore({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "modern-web"
-});
+const sessionStore = new MySQLStore({}, db);
 
 const app = express();
 
