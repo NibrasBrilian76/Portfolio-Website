@@ -13,13 +13,6 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    store: sessionStore,
-    cookie: { secure: false, maxAge: 1000 * 60 * 60 * 24 }
-}));
 
 const db = mysql.createConnection({
     uri: process.env.DATABASE_URL,
@@ -35,6 +28,14 @@ db.connect((err) => {
 });
 
 const sessionStore = new MySQLStore({}, db);
+
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: sessionStore,
+    cookie: { secure: false, maxAge: 1000 * 60 * 60 * 24 }
+}));
 
 function requireLogin(req, res, next){
     if(req.session.user){
