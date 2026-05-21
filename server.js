@@ -1,4 +1,11 @@
 require("dotenv").config();
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 const express = require("express");
 const mysql = require("mysql2");
 const cors = require("cors");
@@ -270,14 +277,29 @@ app.get("/cari", (req, res) => {
 });
 
 // Simpan foto profil
-app.post("/simpan-foto", requireLogin, (req, res) => {
+app.post("/simpan-foto", requireLogin, async (req, res) => {
     const { profile_image } = req.body;
     const user_id = req.session.user.id;
-    const sql = "INSERT INTO portfolios (user_id, profile_image) VALUES (?, ?) ON DUPLICATE KEY UPDATE profile_image = ?";
-    db.query(sql, [user_id, profile_image, profile_image], (err) => {
-        if(err){ console.log(err); res.send("Gagal"); return; }
-        res.send("Foto tersimpan 🔥");
-    });
+
+    try {
+        // Upload ke Cloudinary
+        const result = await cloudinary.uploader.upload(profile_image, {
+            folder: "portfolio-profiles",
+            public_id: `user_${user_id}`,
+            overwrite: true
+        });
+
+        const imageUrl = result.secure_url;
+
+        const sql = "INSERT INTO portfolios (user_id, profile_image) VALUES (?, ?) ON DUPLICATE KEY UPDATE profile_image = ?";
+        db.query(sql, [user_id, imageUrl, imageUrl], (err) => {
+            if(err){ console.log(err); res.send("Gagal"); return; }
+            res.json({ url: imageUrl });
+        });
+    } catch(err) {
+        console.log(err);
+        res.send("Gagal upload foto");
+    }
 });
 
 app.get("/", (req, res) => {

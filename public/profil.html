@@ -148,12 +148,17 @@ document.getElementById("uploadPic").addEventListener("change", function(){
     const reader = new FileReader();
     reader.onload = async function(){
         document.getElementById("profilPic").src = reader.result;
-        await fetch("/simpan-foto", {
+
+        const res = await fetch("/simpan-foto", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ profile_image: reader.result })
         });
-        alert("Foto profil tersimpan 🔥");
+        const data = await res.json();
+        if(data.url){
+            document.getElementById("profilPic").src = data.url;
+            alert("Foto profil tersimpan 🔥");
+        }
     }
     reader.readAsDataURL(file);
 });

@@ -153,12 +153,15 @@ document.getElementById("uploadPic").addEventListener("change", function(){
     reader.onload = async function(){
         document.getElementById("profilePic").src = reader.result;
 
-        // Simpan ke database
-        await fetch("/simpan-foto", {
+        const res = await fetch("/simpan-foto", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ profile_image: reader.result })
         });
+        const data = await res.json();
+        if(data.url){
+            document.getElementById("profilePic").src = data.url;
+        }
     }
     reader.readAsDataURL(file);
 });
