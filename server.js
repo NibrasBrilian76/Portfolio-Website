@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mysql = require("mysql2");
 const cors = require("cors");
@@ -19,7 +20,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use(session({
-    secret: "rahasiaku123",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: sessionStore,
@@ -27,10 +28,10 @@ app.use(session({
 }));
 
 const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "modern-web"
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
 
 db.connect((err) => {
@@ -476,6 +477,6 @@ app.delete("/hapus-post/:id", requireLogin, (req, res) => {
     });
 });
 
-app.listen(3000, () => {
-    console.log("Server berjalan di http://localhost:3000");
+app.listen(process.env.PORT || 3000, () => {
+    console.log(`Server berjalan di port ${process.env.PORT || 3000}`);
 });
