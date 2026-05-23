@@ -511,3 +511,34 @@ audio{
     justify-content: center !important;
     margin-top: 20px;
 }
+
+.passwordWrapper {
+    position: relative;
+    width: 100%;
+}
+
+.passwordWrapper input {
+    width: 100%;
+    padding-right: 45px;
+}
+
+.eyeBtn {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none !important;
+    border: none !important;
+    cursor: pointer;
+    color: #94a3b8;
+    font-size: 18px;
+    width: auto !important;
+    margin-top: 0 !important;
+    padding: 0 !important;
+}
+
+.eyeBtn:hover {
+    color: white;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: none !important;
+}
