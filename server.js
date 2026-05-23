@@ -19,6 +19,7 @@ const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
 
 const db = mysql.createConnection({
