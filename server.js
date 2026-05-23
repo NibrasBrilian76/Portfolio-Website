@@ -1,4 +1,6 @@
 require("dotenv").config();
+const rateLimit = require("express-rate-limit");
+const xss = require("xss");
 const cloudinary = require("cloudinary").v2;
 
 cloudinary.config({
@@ -19,6 +21,27 @@ const app = express();
 
 app.use(cors());
 app.use(bodyParser.json({ limit: "10mb" }));
+// Rate limiting untuk semua request
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 menit
+    max: 100, // maksimal 100 request per 15 menit
+    message: "Terlalu banyak request, coba lagi nanti."
+});
+app.use(limiter);
+
+// Rate limiting khusus untuk login - lebih ketat
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 menit
+    max: 10, // maksimal 10 percobaan login per 15 menit
+    message: "Terlalu banyak percobaan login, coba lagi dalam 15 menit."
+});
+
+// Rate limiting untuk register
+const registerLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 jam
+    max: 5, // maksimal 5 register per jam
+    message: "Terlalu banyak percobaan register, coba lagi dalam 1 jam."
+});
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
@@ -75,23 +98,54 @@ app.get("/feed.html", requireLogin, (req, res) => {
 app.use(express.static("public", { index: false }));
 
 // REGISTER
-app.post("/register", async (req, res) => {
-    const { username, email, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
-    db.query(sql, [username, email, hashedPassword], (err, result) => {
-        if(err){
-            console.log(err);
-            res.send("Register gagal");
-        } else {
-            res.send("Register berhasil 🔥");
+app.post("/register", registerLimiter, async (req, res) => {
+    const username = xss(req.body.username);
+    const email = xss(req.body.email);
+    const password = req.body.password;
+
+    // Validasi
+    if(!username || username.trim() === ""){
+        res.send("Username tidak boleh kosong!"); return;
+    }
+    if(username.length < 3 || username.length > 20){
+        res.send("Username harus 3-20 karakter!"); return;
+    }
+    if(!/^[a-zA-Z0-9_]+$/.test(username)){
+        res.send("Username hanya boleh huruf, angka, dan underscore!"); return;
+    }
+    if(!email || !email.includes("@")){
+        res.send("Email tidak valid!"); return;
+    }
+    if(!password || password.length < 6){
+        res.send("Password minimal 6 karakter!"); return;
+    }
+
+    // Cek username sudah dipakai
+    db.query("SELECT id FROM users WHERE username = ?", [username], async (err, result) => {
+        if(result && result.length > 0){
+            res.send("Username sudah dipakai!"); return;
         }
+
+        // Cek email sudah dipakai
+        db.query("SELECT id FROM users WHERE email = ?", [email], async (err, result) => {
+            if(result && result.length > 0){
+                res.send("Email sudah dipakai!"); return;
+            }
+
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+            db.query(sql, [username, email, hashedPassword], (err) => {
+                if(err){ console.log(err); res.send("Register gagal"); return; }
+                res.send("Register berhasil 🔥");
+            });
+        });
     });
 });
-
+    
 // LOGIN
-app.post("/login", async (req, res) => {
-    const { username, password } = req.body;
+app.post("/login", loginLimiter, async (req, res) => {
+    const username = xss(req.body.username);
+const password = req.body.password;
     const sql = "SELECT * FROM users WHERE username = ?";
     db.query(sql, [username], async (err, result) => {
         if(err){ res.send("Login gagal"); return; }
@@ -124,7 +178,9 @@ app.get("/cek-login", (req, res) => {
 
 // SIMPAN / UPDATE BIO
 app.post("/simpan-bio", requireLogin, (req, res) => {
-    const { bio, theme_color, theme_gradient } = req.body;
+    const bio = xss(req.body.bio);
+const theme_color = xss(req.body.theme_color);
+const theme_gradient = xss(req.body.theme_gradient);
     const user_id = req.session.user.id;
     const color = theme_color || '#3b82f6';
     const gradient = theme_gradient || `linear-gradient(45deg, ${color}, #9333ea)`;
@@ -161,7 +217,7 @@ app.get("/ambil-portfolio", requireLogin, (req, res) => {
 
 // TAMBAH SKILL
 app.post("/tambah-skill", requireLogin, (req, res) => {
-    const { skill_name } = req.body;
+    const skill_name = xss(req.body.skill_name);
     const user_id = req.session.user.id;
     db.query("INSERT INTO skills (user_id, skill_name) VALUES (?, ?)", [user_id, skill_name], (err) => {
         if(err){ res.send("Gagal"); return; }
@@ -180,7 +236,9 @@ app.delete("/hapus-skill/:id", requireLogin, (req, res) => {
 
 // TAMBAH PROJECT
 app.post("/tambah-project", requireLogin, (req, res) => {
-    const { project_name, project_desc, project_image } = req.body;
+    const project_name = xss(req.body.project_name);
+const project_desc = xss(req.body.project_desc);
+const project_image = req.body.project_image;
     const user_id = req.session.user.id;
     db.query("INSERT INTO projects (user_id, project_name, project_desc, project_image) VALUES (?, ?, ?, ?)",
         [user_id, project_name, project_desc, project_image], (err) => {
@@ -200,7 +258,8 @@ app.delete("/hapus-project/:id", requireLogin, (req, res) => {
 
 // TAMBAH SOSIAL
 app.post("/tambah-sosial", requireLogin, (req, res) => {
-    const { social_name, social_link } = req.body;
+    const social_name = xss(req.body.social_name);
+const social_link = xss(req.body.social_link);
     const user_id = req.session.user.id;
     db.query("INSERT INTO social_links (user_id, social_name, social_link) VALUES (?, ?, ?)",
         [user_id, social_name, social_link], (err) => {
@@ -334,7 +393,16 @@ app.get("/ambil-profil", requireLogin, (req, res) => {
 
 // Update profil user
 app.post("/update-profil", requireLogin, async (req, res) => {
-    const { username, email, full_name, phone, location, website, birthdate, tagline, password_lama, password_baru } = req.body;
+    const username = xss(req.body.username);
+const email = xss(req.body.email);
+const full_name = xss(req.body.full_name);
+const phone = xss(req.body.phone);
+const location = xss(req.body.location);
+const website = xss(req.body.website);
+const birthdate = xss(req.body.birthdate);
+const tagline = xss(req.body.tagline);
+const password_lama = req.body.password_lama;
+const password_baru = req.body.password_baru;
     const user_id = req.session.user.id;
 
     // Cek apakah username sudah dipakai orang lain
@@ -462,7 +530,7 @@ app.get("/komentar/:post_id", requireLogin, (req, res) => {
 // Tambah komentar
 app.post("/komentar/:post_id", requireLogin, (req, res) => {
     const { post_id } = req.params;
-    const { comment } = req.body;
+    const comment = xss(req.body.comment);
     const user_id = req.session.user.id;
     db.query("INSERT INTO comments (user_id, post_id, comment) VALUES (?, ?, ?)",
         [user_id, post_id, comment], (err) => {
