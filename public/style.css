@@ -263,6 +263,7 @@ textarea::placeholder{
     font-size:14px;
 
     animation:fade 0.5s ease;
+    width: fit-content;
 }
 
 .projectTitle{
@@ -501,4 +502,12 @@ audio{
     max-height:250px;
 
     object-fit:cover;
+}
+
+#portfolioSkills, #skillContainer {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    justify-content: center !important;
+    margin-top: 20px;
 }
