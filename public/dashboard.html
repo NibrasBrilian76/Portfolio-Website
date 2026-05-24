@@ -201,6 +201,15 @@ async function loadSkills(){
     const res = await fetch("/ambil-portfolio");
     const data = await res.json();
     document.getElementById("skillContainer").innerHTML = "";
+     if(data.skills.length === 0){
+        document.getElementById("skillContainer").innerHTML = `
+            <div style="text-align:center;color:#94a3b8;padding:20px;width:100%">
+                <div style="font-size:40px;margin-bottom:10px">🎯</div>
+                <p>Belum ada skill. Tambahkan skillmu!</p>
+            </div>
+        `;
+        return;
+    }
     data.skills.forEach(skill => createSkill(skill.skill_name, skill.id));
 }
 
@@ -254,6 +263,15 @@ async function loadProjects(){
     const res = await fetch("/ambil-portfolio");
     const data = await res.json();
     document.getElementById("projectContainer").innerHTML = "";
+    if(data.projects.length === 0){
+        document.getElementById("projectContainer").innerHTML = `
+            <div style="text-align:center;color:#94a3b8;padding:20px">
+                <div style="font-size:40px;margin-bottom:10px">🚀</div>
+                <p>Belum ada project. Tambahkan projectmu!</p>
+            </div>
+        `;
+        return;
+    }
     data.projects.forEach(p => createProject(p.project_name, p.project_desc, p.project_image, p.id));
 }
 
@@ -295,6 +313,15 @@ async function loadSocials(){
     const res = await fetch("/ambil-portfolio");
     const data = await res.json();
     document.getElementById("socialContainer").innerHTML = "";
+    if(data.socials.length === 0){
+        document.getElementById("socialContainer").innerHTML = `
+            <div style="text-align:center;color:#94a3b8;padding:20px">
+                <div style="font-size:40px;margin-bottom:10px">🌐</div>
+                <p>Belum ada sosial media. Tambahkan linkmu!</p>
+            </div>
+        `;
+        return;
+    }
     data.socials.forEach(s => createSocial(s.social_name, s.social_link, s.id));
 }
 
