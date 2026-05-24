@@ -24,7 +24,7 @@ app.use(bodyParser.json({ limit: "10mb" }));
 // Rate limiting untuk semua request
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 menit
-    max: 100, // maksimal 100 request per 15 menit
+    max: 500, // maksimal 100 request per 15 menit
     message: "Terlalu banyak request, coba lagi nanti."
 });
 app.use(limiter);
@@ -563,6 +563,11 @@ app.delete("/hapus-post/:id", requireLogin, (req, res) => {
         if(err){ res.send("Gagal"); return; }
         res.send("Post dihapus");
     });
+});
+
+// 404 Handler
+app.use((req, res) => {
+    res.status(404).sendFile(__dirname + "/public/404.html");
 });
 
 app.listen(process.env.PORT || 3000, () => {

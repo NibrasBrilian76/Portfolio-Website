@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shonou.io • Portfolio</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
 </head>
 <body>
     <div id="particles-js"></div>
@@ -155,7 +156,7 @@ animasiCounter("socialCount", data.socials.length);
 
 function copyLink(){
     navigator.clipboard.writeText(window.location.href);
-    alert("Link tersalin! 🔥");
+    showToast("Link tersalin! 🔥");
 }
 
 loadPortfolio();
@@ -166,6 +167,7 @@ loadPortfolio();
 <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 <script src="particles-config.js"></script>
 <script src="transition.js"></script>
+<script src="toast.js"></script>
 
 </body>
 </html>

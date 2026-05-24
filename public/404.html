@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+  <title>Shonou.io • 404</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script src="particles-config.js"></script>
+</head>
+<body>
+  <div id="particles-js"></div>
+  <div class="background"></div>
+
+  <div class="container" style="min-height:100vh;align-items:center">
+    <div class="card" style="text-align:center;max-width:500px">
+
+      <div id="errorCode" style="font-size:120px;font-weight:bold;background:var(--mainGradient);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1">
+        404
+      </div>
+
+      <h1 style="font-size:24px;margin-bottom:10px">Halaman Tidak Ditemukan 😢</h1>
+
+      <p style="color:#94a3b8;margin-bottom:20px;line-height:1.6">
+        Sepertinya halaman yang kamu cari tidak ada atau sudah dipindahkan.
+      </p>
+
+      <button onclick="window.location.href='/'">🏠 Kembali ke Beranda</button>
+      <button onclick="history.back()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);margin-top:10px">
+        ← Kembali
+      </button>
+
+    </div>
+  </div>
+
+<script src="gsap-config.js"></script>
+<script src="transition.js"></script>
+<script>
+gsap.from("#errorCode", {
+    duration: 1,
+    scale: 0.5,
+    opacity: 0,
+    ease: "back.out(1.7)",
+    delay: 0.2
+});
+</script>
+
+</body>
+</html>
