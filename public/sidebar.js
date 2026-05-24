@@ -190,6 +190,9 @@ async function buatSidebar(username){
             <button class="sidebarItem" onclick="sharePorfolio('${username}')">
                 <span class="icon">🔗</span> Share Portfolio
             </button>
+            <button class="sidebarItem" onclick="toggleMode()">
+    <span class="icon" id="modeIcon">🌙</span> <span id="modeText">Dark Mode</span>
+</button>
             <button class="sidebarItem sidebarLogout" onclick="navigasi('/logout')">
                 <span class="icon">🚪</span> Logout
             </button>
@@ -219,3 +222,20 @@ function sharePorfolio(username){
     navigator.clipboard.writeText(link);
     alert("Link portofolio tersalin! 🔥\n" + link);
 }
+
+function toggleMode(){
+    const isLight = document.body.classList.toggle("light-mode");
+    localStorage.setItem("mode", isLight ? "light" : "dark");
+    document.getElementById("modeIcon").innerText = isLight ? "☀️" : "🌙";
+    document.getElementById("modeText").innerText = isLight ? "Light Mode" : "Dark Mode";
+}
+
+// Load mode saat halaman dibuka
+function loadMode(){
+    const mode = localStorage.getItem("mode");
+    if(mode === "light"){
+        document.body.classList.add("light-mode");
+    }
+}
+
+loadMode();

@@ -597,3 +597,79 @@ audio{
         opacity: 0;
     }
 }
+
+/* Light Mode */
+body.light-mode {
+    background: #f1f5f9;
+}
+
+body.light-mode .card {
+    background: rgba(255,255,255,0.9);
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+body.light-mode .card h1,
+body.light-mode .card h2,
+body.light-mode .projectTitle,
+body.light-mode .postUsername,
+body.light-mode .sidebarUsername {
+    color: #0f172a;
+}
+
+body.light-mode .card input,
+body.light-mode textarea {
+    background: rgba(0,0,0,0.05);
+    color: #0f172a;
+}
+
+body.light-mode .card input::placeholder,
+body.light-mode textarea::placeholder {
+    color: #64748b;
+}
+
+body.light-mode .projectCard,
+body.light-mode .socialCard,
+body.light-mode .statBox {
+    background: rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.1);
+    color: #0f172a;
+}
+
+body.light-mode .socialCard a {
+    color: #0f172a;
+}
+
+body.light-mode #bioText,
+body.light-mode #message,
+body.light-mode .subtitle,
+body.light-mode .postCaption,
+body.light-mode .postTime {
+    color: #334155;
+}
+
+body.light-mode .topbar {
+    background: rgba(255,255,255,0.9);
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+body.light-mode .topbarLeft span {
+    color: #0f172a;
+}
+
+body.light-mode .sidebar {
+    background: rgba(255,255,255,0.98);
+}
+
+body.light-mode .sidebarItem {
+    color: #0f172a;
+}
+
+body.light-mode .postCard {
+    background: rgba(255,255,255,0.9);
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+body.light-mode #loader {
+    background: #f1f5f9;
+    color: #0f172a;
+}
