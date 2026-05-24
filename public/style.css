@@ -673,3 +673,33 @@ body.light-mode #loader {
     background: #f1f5f9;
     color: #0f172a;
 }
+
+/* Skeleton Loading */
+.skeleton {
+    background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 12px;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeletonCircle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+}
+
+.skeletonText {
+    height: 20px;
+    margin: 8px auto;
+}
+
+.skeletonCard {
+    height: 120px;
+    margin-bottom: 15px;
+}

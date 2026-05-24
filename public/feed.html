@@ -332,6 +332,38 @@ async function init(){
 }
 
 async function loadFeed(){
+
+  // Tampilkan skeleton dulu
+    document.getElementById("feedContainer").innerHTML = `
+        <div class="postCard">
+            <div style="display:flex;align-items:center;gap:10px;padding:15px">
+                <div class="skeleton skeletonCircle" style="width:42px;height:42px;margin:0"></div>
+                <div style="flex:1">
+                    <div class="skeleton skeletonText" style="width:120px"></div>
+                    <div class="skeleton skeletonText" style="width:80px;margin-top:5px"></div>
+                </div>
+            </div>
+            <div class="skeleton" style="height:200px;border-radius:0"></div>
+            <div style="padding:15px">
+                <div class="skeleton skeletonText" style="width:80%"></div>
+                <div class="skeleton skeletonText" style="width:60%;margin-top:8px"></div>
+            </div>
+        </div>
+        <div class="postCard">
+            <div style="display:flex;align-items:center;gap:10px;padding:15px">
+                <div class="skeleton skeletonCircle" style="width:42px;height:42px;margin:0"></div>
+                <div style="flex:1">
+                   <div class="skeleton skeletonText" style="width:120px"></div>
+                    <div class="skeleton skeletonText" style="width:80px;margin-top:5px"></div>
+                </div>
+            </div>
+            <div class="skeleton" style="height:200px;border-radius:0"></div>
+            <div style="padding:15px">
+                <div class="skeleton skeletonText" style="width:80%"></div>
+                <div class="skeleton skeletonText" style="width:60%;margin-top:8px"></div>
+            </div>
+        </div>
+    `;
     const res = await fetch("/feed");
     const posts = await res.json();
     const container = document.getElementById("feedContainer");
