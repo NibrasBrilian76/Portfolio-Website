@@ -187,6 +187,9 @@ async function buatSidebar(username){
             <button class="sidebarItem" onclick="navigasi('/cari.html')">
                 <span class="icon">🔍</span> Cari Portfolio
             </button>
+            <button class="sidebarItem" onclick="navigasi('/about.html')">
+    <span class="icon">ℹ️</span> About
+</button>
             <button class="sidebarItem" onclick="sharePorfolio('${username}')">
                 <span class="icon">🔗</span> Share Portfolio
             </button>

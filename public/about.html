@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+  <title>Shonou.io • About</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="sidebar.js"></script>
+  <style>
+    .aboutHero {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .aboutHero h1 {
+      font-size: 42px;
+      color: white;
+      margin-bottom: 15px;
+    }
+    .aboutHero h1 span {
+      background: var(--mainGradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .aboutHero p {
+      color: #94a3b8;
+      font-size: 16px;
+      line-height: 1.8;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .featureGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-top: 30px;
+    }
+    .featureItem {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      transition: 0.3s;
+    }
+    .featureItem:hover {
+      transform: translateY(-5px);
+      background: rgba(255,255,255,0.1);
+    }
+    .featureItem .icon {
+      font-size: 35px;
+      margin-bottom: 10px;
+    }
+    .featureItem h3 {
+      color: white;
+      font-size: 15px;
+      margin-bottom: 5px;
+    }
+    .featureItem p {
+      color: #94a3b8;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .statGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 15px;
+      margin-top: 30px;
+    }
+    .statItem {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+    }
+    .statItem h2 {
+      font-size: 32px;
+      background: var(--mainGradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 5px;
+    }
+    .statItem p {
+      color: #94a3b8;
+      font-size: 13px;
+    }
+    .sectionTitle {
+      color: white;
+      font-size: 22px;
+      font-weight: bold;
+      margin: 30px 0 15px;
+      text-align: center;
+    }
+    .techStack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 15px;
+    }
+    .techBadge {
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: var(--mainGradient);
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div id="particles-js"></div>
+  <div class="background"></div>
+
+  <div class="container">
+    <div class="card" style="max-width:700px">
+
+      <!-- Hero -->
+      <div class="aboutHero">
+        <h1>Tentang <span>Shonou.io</span> 🔥</h1>
+        <p>Platform portofolio sosial media gratis untuk para developer, desainer, dan kreator digital. Buat portofoliomu, bagikan projectmu, dan terhubung dengan komunitas.</p>
+      </div>
+
+      <!-- Stats -->
+      <p class="sectionTitle">Platform Kami 📊</p>
+      <div class="statGrid">
+        <div class="statItem">
+          <h2>∞</h2>
+          <p>Portfolio Gratis</p>
+        </div>
+        <div class="statItem">
+          <h2>100%</h2>
+          <p>Open Platform</p>
+        </div>
+        <div class="statItem">
+          <h2>24/7</h2>
+          <p>Selalu Online</p>
+        </div>
+        <div class="statItem">
+          <h2>🔒</h2>
+          <p>Aman & Terenkripsi</p>
+        </div>
+      </div>
+
+      <!-- Fitur -->
+      <p class="sectionTitle">Fitur Unggulan ✨</p>
+      <div class="featureGrid">
+        <div class="featureItem">
+          <div class="icon">🎨</div>
+          <h3>Custom Theme</h3>
+          <p>Pilih warna gradient sesukamu</p>
+        </div>
+        <div class="featureItem">
+          <div class="icon">📱</div>
+          <h3>Social Feed</h3>
+          <p>Posting dan bagikan projectmu</p>
+        </div>
+        <div class="featureItem">
+          <div class="icon">❤️</div>
+          <h3>Like & Komentar</h3>
+          <p>Interaksi antar sesama kreator</p>
+        </div>
+        <div class="featureItem">
+          <div class="icon">👥</div>
+          <h3>Follow System</h3>
+          <p>Ikuti kreator favoritmu</p>
+        </div>
+        <div class="featureItem">
+          <div class="icon">🔍</div>
+          <h3>Pencarian</h3>
+          <p>Temukan kreator berdasarkan skill</p>
+        </div>
+        <div class="featureItem">
+          <div class="icon">🔗</div>
+          <h3>Link Unik</h3>
+          <p>Setiap user punya link sendiri</p>
+        </div>
+      </div>
+
+      <!-- Tech Stack -->
+      <p class="sectionTitle">Dibuat Dengan 🛠️</p>
+      <div class="techStack">
+        <span class="techBadge">Node.js</span>
+        <span class="techBadge">Express.js</span>
+        <span class="techBadge">MySQL</span>
+        <span class="techBadge">Railway</span>
+        <span class="techBadge">Cloudinary</span>
+        <span class="techBadge">GSAP</span>
+        <span class="techBadge">Particles.js</span>
+        <span class="techBadge">bcrypt</span>
+      </div>
+
+      <!-- CTA -->
+      <div style="text-align:center;margin-top:30px;padding:25px;background:rgba(255,255,255,0.05);border-radius:16px;border:1px solid rgba(255,255,255,0.1)">
+        <h3 style="color:white;margin-bottom:10px">Siap Bergabung? 🚀</h3>
+        <p style="color:#94a3b8;margin-bottom:15px;font-size:14px">Gratis selamanya. Tidak perlu kartu kredit.</p>
+        <button onclick="window.location.href='/index.html'">Daftar Sekarang 🔥</button>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+async function init(){
+    const res = await fetch("/cek-login");
+    const data = await res.json();
+    if(data.loggedIn){
+        buatSidebar(data.user.username);
+    }
+}
+init();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/ScrollTrigger.min.js"></script>
+<script src="gsap-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<script src="particles-config.js"></script>
+<script src="toast.js"></script>
+<script src="transition.js"></script>
+
+</body>
+</html>

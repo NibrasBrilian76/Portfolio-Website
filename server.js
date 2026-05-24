@@ -570,6 +570,10 @@ app.use((req, res) => {
     res.status(404).sendFile(__dirname + "/public/404.html");
 });
 
+app.get("/about.html", (req, res) => {
+    res.sendFile(__dirname + "/public/about.html");
+});
+
 app.listen(process.env.PORT || 3000, () => {
     console.log(`Server berjalan di port ${process.env.PORT || 3000}`);
 });
