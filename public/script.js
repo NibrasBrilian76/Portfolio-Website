@@ -30,4 +30,10 @@ form.addEventListener("submit", async function(e){
 
     document.getElementById("message").innerText = data;
 
+    if(data.includes("berhasil")){
+    setTimeout(() => {
+        window.location.href = "/login.html";
+    }, 1500);
+}
+
 });
