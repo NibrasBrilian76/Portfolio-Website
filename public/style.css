@@ -167,6 +167,13 @@ body{
     background:var(--mainGradient);
 
     transition:0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.eyeBtn {
+    position: absolute !important;
+    overflow: visible !important;
 }
 
 .arahBtn {
@@ -541,4 +548,52 @@ audio{
     color: white;
     transform: translateY(-50%) scale(1.1);
     box-shadow: none !important;
+}
+
+/* Page Transition */
+.page-transition {
+    animation: pageIn 0.4s ease forwards;
+}
+
+@keyframes pageIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pageOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+.page-exit {
+    animation: pageOut 0.3s ease forwards;
+}
+
+/* Ripple Effect */
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transform: scale(0);
+    animation: rippleEffect 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes rippleEffect {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
 }
