@@ -47,11 +47,11 @@
     <button onclick="chooseImage()">Upload Profile</button>
 
     <textarea id="bioInput" placeholder="Tulis bio keren lu..."></textarea>
-    <button onclick="saveBio()">Save Bio</button>
+    <button id="btnSaveBio" onclick="saveBio()">Save Bio</button>
     <p id="bioText"></p>
 
     <input type="text" id="skillInput" placeholder="Masukkan skill">
-    <button onclick="addSkill()">Add Skill</button>
+    <button id="btnAddSkill" onclick="addSkill()">Add Skill</button>
     <div id="skillContainer"></div>
 
     <h2 class="projectTitle">My Projects 🚀</h2>
@@ -64,13 +64,13 @@
 <p id="projectImageLabel" style="color:#94a3b8;text-align:center;font-size:13px">
     Belum ada gambar dipilih
 </p>
-    <button onclick="addProject()">Add Project</button>
+    <button id="btnAddProject" onclick="addProject()">Add Project</button>
     <div id="projectContainer"></div>
 
     <h2 class="projectTitle">Social Links 🌐</h2>
     <input type="text" id="socialName" placeholder="Nama sosial media">
     <input type="text" id="socialLink" placeholder="Link sosial media">
-    <button onclick="addSocial()">Add Social</button>
+    <button id="btnAddSocial" onclick="addSocial()">Add Social</button>
     <div id="socialContainer"></div>
 
     <h2 class="projectTitle">Choose Theme 🎨</h2>
@@ -195,30 +195,36 @@ document.getElementById("uploadPic").addEventListener("change", function(){
 // Bio
 async function saveBio(){
     const bio = document.getElementById("bioInput").value;
+    if(!validasiInput(bio, "Bio", { min: 1, max: 500 })) return;
+
+    setLoading("btnSaveBio", true);
     const res = await fetch("/simpan-bio", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ bio })
     });
     const data = await res.text();
+    setLoading("btnSaveBio", false);
     document.getElementById("bioText").innerText = bio;
-    alert(data);
+    showToast(data);
 }
 
 // Skill
 async function addSkill(){
     const skillInput = document.getElementById("skillInput");
     const skill = skillInput.value.trim();
-    if(skill === "") return;
+    if(!validasiInput(skill, "Skill", { min: 1, max: 50 })) return;
 
-    const res = await fetch("/tambah-skill", {
+    setLoading("btnAddSkill", true);
+    await fetch("/tambah-skill", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ skill_name: skill })
     });
-
+    setLoading("btnAddSkill", false);
     await loadSkills();
     skillInput.value = "";
+    showToast("Skill ditambahkan! 🎯");
 }
 
 async function loadSkills(){
@@ -266,21 +272,26 @@ async function addProject(){
     const desc = document.getElementById("projectDesc").value;
     const imageFile = document.getElementById("projectImage").files[0];
 
-    if(name.trim() === "" || desc.trim() === "") return;
+    if(!validasiInput(name, "Nama project", { min: 1, max: 100 })) return;
+    if(!validasiInput(desc, "Deskripsi project", { min: 1, max: 500 })) return;
 
-    const reader = new FileReader();
-    reader.onload = async function(){
-        const res = await fetch("/tambah-project", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ project_name: name, project_desc: desc, project_image: reader.result })
-        });
-        await loadProjects();
-        document.getElementById("projectName").value = "";
-        document.getElementById("projectDesc").value = "";
-    }
+    setLoading("btnAddProject", true);
 
     if(imageFile){
+        const reader = new FileReader();
+        reader.onload = async function(){
+            await fetch("/tambah-project", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ project_name: name, project_desc: desc, project_image: reader.result })
+            });
+            setLoading("btnAddProject", false);
+            await loadProjects();
+            document.getElementById("projectName").value = "";
+            document.getElementById("projectDesc").value = "";
+            document.getElementById("projectImageLabel").innerText = "Belum ada gambar dipilih";
+            showToast("Project ditambahkan! 🚀");
+        }
         reader.readAsDataURL(imageFile);
     } else {
         await fetch("/tambah-project", {
@@ -288,9 +299,11 @@ async function addProject(){
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ project_name: name, project_desc: desc, project_image: "" })
         });
+        setLoading("btnAddProject", false);
         await loadProjects();
         document.getElementById("projectName").value = "";
         document.getElementById("projectDesc").value = "";
+        showToast("Project ditambahkan! 🚀");
     }
 }
 
@@ -331,17 +344,21 @@ async function hapusProject(id){
 async function addSocial(){
     const name = document.getElementById("socialName").value;
     const link = document.getElementById("socialLink").value;
-    if(name.trim() === "" || link.trim() === "") return;
 
+    if(!validasiInput(name, "Nama sosial media", { min: 1, max: 50 })) return;
+    if(!validasiInput(link, "Link sosial media", { min: 1, url: true })) return;
+
+    setLoading("btnAddSocial", true);
     await fetch("/tambah-sosial", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ social_name: name, social_link: link })
     });
-
+    setLoading("btnAddSocial", false);
     await loadSocials();
     document.getElementById("socialName").value = "";
     document.getElementById("socialLink").value = "";
+    showToast("Sosial media ditambahkan! 🌐");
 }
 
 async function loadSocials(){
@@ -464,6 +481,7 @@ init();
 <script src="particles-config.js"></script>
 <script src="transition.js"></script>
 <script src="toast.js"></script>
+<script src="helpers.js"></script>
 
 </body>
 </html>

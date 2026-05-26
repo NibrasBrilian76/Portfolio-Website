@@ -816,3 +816,14 @@ body.light-mode #loader {
         padding: 10px;
     }
 }
+
+/* Loading Indicator Button */
+.btn-loading {
+    opacity: 0.7;
+    cursor: not-allowed !important;
+    pointer-events: none;
+}
+
+.btn-loading::after {
+    content: " ⏳";
+}

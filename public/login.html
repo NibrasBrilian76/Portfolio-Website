@@ -45,30 +45,35 @@
 const form = document.getElementById("loginForm");
 
 form.addEventListener("submit", async function(e){
-
     e.preventDefault();
 
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
 
+    if(!validasiInput(username, "Username", { min: 1 })) return;
+    if(!validasiInput(password, "Password", { min: 1 })) return;
+
+    const btn = document.querySelector("button[type='submit']");
+    btn.innerText = "Loading...";
+    btn.classList.add("btn-loading");
+
     const response = await fetch("/login", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password })
     });
 
     const data = await response.text();
+    btn.innerText = "Login";
+    btn.classList.remove("btn-loading");
 
-    document.getElementById("message").innerText = data;
+    showToast(data.includes("berhasil") ? data : data, data.includes("berhasil") ? "success" : "error");
 
     if(data.includes("berhasil")){
         setTimeout(() => {
             window.location.href = "/dashboard.html";
         }, 1000);
     }
-
 });
 
 </script>
@@ -92,6 +97,7 @@ function togglePassword(id, btn){
 </script>
 <script src="transition.js"></script>
 <script src="toast.js"></script>
+<script src="helpers.js"></script>
 
 </body>
 </html>
