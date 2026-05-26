@@ -514,12 +514,17 @@ app.post("/like/:post_id", requireLogin, (req, res) => {
             });
         } else {
             db.query("INSERT INTO likes (user_id, post_id) VALUES (?, ?)", [user_id, post_id], () => {
+                // Ambil pemilik post lalu buat notifikasi
+                db.query("SELECT user_id FROM posts WHERE id = ?", [post_id], (err, result) => {
+                    if(result && result.length > 0){
+                        tambahNotifikasi(result[0].user_id, user_id, "like", post_id);
+                    }
+                });
                 res.json({ liked: true });
             });
         }
     });
 });
-
 // Ambil komentar
 app.get("/komentar/:post_id", requireLogin, (req, res) => {
     const { post_id } = req.params;
@@ -543,6 +548,12 @@ app.post("/komentar/:post_id", requireLogin, (req, res) => {
     db.query("INSERT INTO comments (user_id, post_id, comment) VALUES (?, ?, ?)",
         [user_id, post_id, comment], (err) => {
             if(err){ res.send("Gagal"); return; }
+            // Buat notifikasi
+            db.query("SELECT user_id FROM posts WHERE id = ?", [post_id], (err, result) => {
+                if(result && result.length > 0){
+                    tambahNotifikasi(result[0].user_id, user_id, "comment", post_id);
+                }
+            });
             res.send("Komentar ditambahkan 🔥");
         });
 });
@@ -558,6 +569,7 @@ app.post("/follow/:target_id", requireLogin, (req, res) => {
             });
         } else {
             db.query("INSERT INTO follows (follower_id, following_id) VALUES (?, ?)", [user_id, target_id], () => {
+                tambahNotifikasi(target_id, user_id, "follow");
                 res.json({ following: true });
             });
         }
@@ -580,6 +592,52 @@ app.use((req, res) => {
 
 app.get("/about.html", (req, res) => {
     res.sendFile(__dirname + "/public/about.html");
+});
+
+app.get("/settings.html", requireLogin, (req, res) => {
+    res.sendFile(__dirname + "/public/settings.html");
+});
+
+// Tambah notifikasi
+function tambahNotifikasi(user_id, from_user_id, type, post_id = null){
+    if(user_id === from_user_id) return; // Tidak notif diri sendiri
+    db.query("INSERT INTO notifications (user_id, from_user_id, type, post_id) VALUES (?, ?, ?, ?)",
+        [user_id, from_user_id, type, post_id]);
+}
+
+// Ambil notifikasi
+app.get("/notifikasi", requireLogin, (req, res) => {
+    const user_id = req.session.user.id;
+    db.query(`
+        SELECT notifications.*, users.username, portfolios.profile_image as avatar
+        FROM notifications
+        JOIN users ON notifications.from_user_id = users.id
+        LEFT JOIN portfolios ON notifications.from_user_id = portfolios.user_id
+        WHERE notifications.user_id = ?
+        ORDER BY notifications.created_at DESC
+        LIMIT 20
+    `, [user_id], (err, result) => {
+        if(err){ res.json([]); return; }
+        res.json(result);
+    });
+});
+
+// Jumlah notifikasi belum dibaca
+app.get("/notifikasi/unread", requireLogin, (req, res) => {
+    const user_id = req.session.user.id;
+    db.query("SELECT COUNT(*) as count FROM notifications WHERE user_id = ? AND is_read = 0",
+        [user_id], (err, result) => {
+            if(err){ res.json({ count: 0 }); return; }
+            res.json({ count: result[0].count });
+        });
+});
+
+// Tandai semua sudah dibaca
+app.post("/notifikasi/baca", requireLogin, (req, res) => {
+    const user_id = req.session.user.id;
+    db.query("UPDATE notifications SET is_read = 1 WHERE user_id = ?", [user_id], () => {
+        res.send("OK");
+    });
 });
 
 app.listen(process.env.PORT || 3000, () => {

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+  <title>Shonou.io • Settings</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="sidebar.js"></script>
+  <style>
+    .settingSection {
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 15px;
+    }
+    .settingTitle {
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .settingRow {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .settingRow:last-child {
+        border-bottom: none;
+    }
+    .settingLabel {
+        color: #cbd5e1;
+        font-size: 14px;
+    }
+    .settingDesc {
+        color: #64748b;
+        font-size: 12px;
+        margin-top: 3px;
+    }
+    /* Toggle Switch */
+    .toggle {
+        position: relative;
+        width: 48px;
+        height: 26px;
+        flex-shrink: 0;
+    }
+    .toggle input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .toggleSlider {
+        position: absolute;
+        cursor: pointer;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(255,255,255,0.15);
+        border-radius: 26px;
+        transition: 0.3s;
+    }
+    .toggleSlider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 3px;
+        bottom: 3px;
+        background: white;
+        border-radius: 50%;
+        transition: 0.3s;
+    }
+    .toggle input:checked + .toggleSlider {
+        background: var(--mainGradient);
+    }
+    .toggle input:checked + .toggleSlider:before {
+        transform: translateX(22px);
+    }
+    .dangerBtn {
+        background: linear-gradient(45deg, #ef4444, #dc2626) !important;
+        width: auto !important;
+        padding: 10px 20px !important;
+        margin-top: 0 !important;
+        font-size: 14px !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="particles-js"></div>
+  <div class="background"></div>
+
+  <div class="container">
+    <div class="card" style="max-width:600px">
+
+      <h1>Settings ⚙️</h1>
+
+      <!-- Notifikasi -->
+      <div class="settingSection">
+        <div class="settingTitle">🔔 Notifikasi</div>
+
+        <div class="settingRow">
+          <div>
+            <div class="settingLabel">Like pada postingan</div>
+            <div class="settingDesc">Notifikasi saat ada yang like postinganmu</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="notifLike" checked onchange="simpanSettings()">
+            <span class="toggleSlider"></span>
+          </label>
+        </div>
+
+        <div class="settingRow">
+          <div>
+            <div class="settingLabel">Komentar baru</div>
+            <div class="settingDesc">Notifikasi saat ada yang komentar di postinganmu</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="notifComment" checked onchange="simpanSettings()">
+            <span class="toggleSlider"></span>
+          </label>
+        </div>
+
+        <div class="settingRow">
+          <div>
+            <div class="settingLabel">Follower baru</div>
+            <div class="settingDesc">Notifikasi saat ada yang follow kamu</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="notifFollow" checked onchange="simpanSettings()">
+            <span class="toggleSlider"></span>
+          </label>
+        </div>
+
+      </div>
+
+      <!-- Privasi -->
+      <div class="settingSection">
+        <div class="settingTitle">🔒 Privasi</div>
+
+        <div class="settingRow">
+          <div>
+            <div class="settingLabel">Profil Publik</div>
+            <div class="settingDesc">Profil bisa dilihat tanpa login</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="profilPublik" checked onchange="simpanSettings()">
+            <span class="toggleSlider"></span>
+          </label>
+        </div>
+
+        <div class="settingRow">
+          <div>
+            <div class="settingLabel">Tampil di Pencarian</div>
+            <div class="settingDesc">Profilmu muncul di hasil pencarian</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="tampilCari" checked onchange="simpanSettings()">
+            <span class="toggleSlider"></span>
+          </label>
+        </div>
+
+      </div>
+
+      <!-- Tampilan -->
+      <div class="settingSection">
+        <div class="settingTitle">🎨 Tampilan</div>
+
+        <div class="settingRow">
+          <div>
+            <div class="settingLabel">Mode Gelap</div>
+            <div class="settingDesc">Aktifkan tampilan dark mode</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="darkMode" onchange="toggleDarkMode()">
+            <span class="toggleSlider"></span>
+          </label>
+        </div>
+
+        <div class="settingRow">
+          <div>
+            <div class="settingLabel">Animasi</div>
+            <div class="settingDesc">Aktifkan animasi partikel background</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="animasiToggle" checked onchange="toggleAnimasi()">
+            <span class="toggleSlider"></span>
+          </label>
+        </div>
+
+      </div>
+
+      <!-- Akun -->
+      <div class="settingSection">
+        <div class="settingTitle">👤 Akun</div>
+
+        <div class="settingRow">
+          <div>
+            <div class="settingLabel">Edit Profil</div>
+            <div class="settingDesc">Ubah username, foto, dan info pribadi</div>
+          </div>
+          <button onclick="window.location.href='/profil.html'" style="width:auto;padding:8px 16px;margin-top:0;font-size:13px">Edit →</button>
+        </div>
+
+        <div class="settingRow">
+          <div>
+            <div class="settingLabel">Logout</div>
+            <div class="settingDesc">Keluar dari akun ini</div>
+          </div>
+          <button onclick="window.location.href='/logout'" class="dangerBtn">Logout 🚪</button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+<script>
+async function init(){
+    const res = await fetch("/cek-login");
+    const data = await res.json();
+    if(!data.loggedIn){
+        window.location.href = "/login.html";
+        return;
+    }
+    buatSidebar(data.user.username);
+    loadSettings();
+}
+
+function loadSettings(){
+    const settings = JSON.parse(localStorage.getItem("settings") || "{}");
+
+    document.getElementById("notifLike").checked = settings.notifLike !== false;
+    document.getElementById("notifComment").checked = settings.notifComment !== false;
+    document.getElementById("notifFollow").checked = settings.notifFollow !== false;
+    document.getElementById("profilPublik").checked = settings.profilPublik !== false;
+    document.getElementById("tampilCari").checked = settings.tampilCari !== false;
+    document.getElementById("darkMode").checked = localStorage.getItem("mode") === "light" ? false : document.body.classList.contains("light-mode") ? false : false;
+    document.getElementById("animasiToggle").checked = localStorage.getItem("animasi") !== "off";
+}
+
+function simpanSettings(){
+    const settings = {
+        notifLike: document.getElementById("notifLike").checked,
+        notifComment: document.getElementById("notifComment").checked,
+        notifFollow: document.getElementById("notifFollow").checked,
+        profilPublik: document.getElementById("profilPublik").checked,
+        tampilCari: document.getElementById("tampilCari").checked,
+    };
+    localStorage.setItem("settings", JSON.stringify(settings));
+    showToast("Settings tersimpan ⚙️");
+}
+
+function toggleDarkMode(){
+    const isLight = document.body.classList.toggle("light-mode");
+    localStorage.setItem("mode", isLight ? "light" : "dark");
+    document.getElementById("darkMode").checked = !isLight;
+}
+
+function toggleAnimasi(){
+    const aktif = document.getElementById("animasiToggle").checked;
+    localStorage.setItem("animasi", aktif ? "on" : "off");
+    const canvas = document.querySelector("#particles-js canvas");
+    if(canvas) canvas.style.display = aktif ? "block" : "none";
+    showToast(aktif ? "Animasi diaktifkan ✨" : "Animasi dimatikan");
+}
+
+init();
+</script>
+<script src="toast.js"></script>
+<script src="helpers.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+<script src="gsap-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<script src="particles-config.js"></script>
+<script src="transition.js"></script>
+
+</body>
+</html>

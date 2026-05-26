@@ -166,11 +166,28 @@ async function buatSidebar(username){
             <img src="${profileImg}">
             <span>@${username}</span>
         </div>
-        <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
+        <div style="display:flex;align-items:center;gap:10px">
+            <div style="position:relative;cursor:pointer" onclick="toggleNotifikasi()">
+                <span style="font-size:22px">🔔</span>
+                <span id="notifBadge" style="display:none;position:absolute;top:-5px;right:-5px;background:#ef4444;color:white;border-radius:50%;width:18px;height:18px;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:bold">0</span>
+            </div>
+            <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Panel Notifikasi -->
+    <div id="notifPanel" style="display:none;position:fixed;top:60px;right:10px;width:300px;max-height:400px;overflow-y:auto;background:#1e293b;border-radius:16px;border:1px solid rgba(255,255,255,0.1);z-index:1001;box-shadow:0 10px 40px rgba(0,0,0,0.5)">
+        <div style="padding:15px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;justify-content:space-between;align-items:center">
+            <span style="color:white;font-weight:bold">Notifikasi 🔔</span>
+            <span onclick="bacaSemua()" style="color:#94a3b8;font-size:12px;cursor:pointer">Tandai semua dibaca</span>
+        </div>
+        <div id="notifList" style="padding:10px">
+            <p style="color:#94a3b8;text-align:center;font-size:13px;padding:20px">Loading...</p>
+        </div>
     </div>
         <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
         <div class="sidebar" id="sidebar">
@@ -187,6 +204,9 @@ async function buatSidebar(username){
             <button class="sidebarItem" onclick="navigasi('/cari.html')">
                 <span class="icon">🔍</span> Cari Portfolio
             </button>
+            <button class="sidebarItem" onclick="navigasi('/settings.html')">
+    <span class="icon">⚙️</span> Settings
+</button>
             <button class="sidebarItem" onclick="navigasi('/about.html')">
     <span class="icon">ℹ️</span> About
 </button>
@@ -242,3 +262,76 @@ function loadMode(){
 }
 
 loadMode();
+
+async function cekNotifikasi(){
+    try {
+        const res = await fetch("/notifikasi/unread");
+        const data = await res.json();
+        const badge = document.getElementById("notifBadge");
+        if(badge){
+            if(data.count > 0){
+                badge.style.display = "flex";
+                badge.innerText = data.count > 9 ? "9+" : data.count;
+            } else {
+                badge.style.display = "none";
+            }
+        }
+    } catch(e) {}
+}
+
+async function toggleNotifikasi(){
+    const panel = document.getElementById("notifPanel");
+    if(panel.style.display === "none" || panel.style.display === ""){
+        panel.style.display = "block";
+        await loadNotifikasi();
+        await bacaSemua();
+    } else {
+        panel.style.display = "none";
+    }
+}
+
+async function loadNotifikasi(){
+    const res = await fetch("/notifikasi");
+    const data = await res.json();
+    const list = document.getElementById("notifList");
+
+    if(data.length === 0){
+        list.innerHTML = `<p style="color:#94a3b8;text-align:center;font-size:13px;padding:20px">Belum ada notifikasi</p>`;
+        return;
+    }
+
+    const icons = { like: "❤️", comment: "💬", follow: "👥" };
+    const texts = {
+        like: "menyukai postinganmu",
+        comment: "mengomentari postinganmu",
+        follow: "mulai mengikutimu"
+    };
+
+    list.innerHTML = data.map(n => `
+        <div style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:${n.is_read ? 'transparent' : 'rgba(255,255,255,0.05)'};margin-bottom:5px">
+            <img src="${n.avatar || 'https://via.placeholder.com/35'}" style="width:35px;height:35px;border-radius:50%;object-fit:cover;flex-shrink:0">
+            <div style="flex:1">
+                <p style="color:white;font-size:13px"><strong>@${n.username}</strong> ${texts[n.type] || n.type} ${icons[n.type] || ''}</p>
+                <p style="color:#64748b;font-size:11px">${new Date(n.created_at).toLocaleDateString('id-ID')}</p>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function bacaSemua(){
+    await fetch("/notifikasi/baca", { method: "POST" });
+    const badge = document.getElementById("notifBadge");
+    if(badge) badge.style.display = "none";
+}
+
+// Cek notifikasi setiap 30 detik
+cekNotifikasi();
+setInterval(cekNotifikasi, 30000);
+
+// Tutup panel kalau klik di luar
+document.addEventListener("click", function(e){
+    const panel = document.getElementById("notifPanel");
+    if(panel && !panel.contains(e.target) && !e.target.closest("[onclick='toggleNotifikasi()']")){
+        panel.style.display = "none";
+    }
+});
