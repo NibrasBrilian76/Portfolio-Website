@@ -11,6 +11,30 @@
 <body>
     <div id="particles-js"></div>
 
+    <!-- Modal Konfirmasi Hapus Skill -->
+<div id="modalHapusSkill" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9998;justify-content:center;align-items:center">
+    <div style="background:#1e293b;border-radius:20px;padding:25px;max-width:350px;width:90%;border:1px solid rgba(255,255,255,0.1);text-align:center">
+        <h3 style="color:white;margin-bottom:10px">Hapus Skill? 🎯</h3>
+        <p style="color:#94a3b8;margin-bottom:20px;font-size:14px">Skill yang dihapus tidak bisa dikembalikan.</p>
+        <div style="display:flex;gap:10px">
+            <button id="btnBatalHapusSkill" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1)">Batal</button>
+            <button id="btnKonfirmasiHapusSkill" style="flex:1;background:linear-gradient(45deg,#ef4444,#dc2626)">Hapus</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Konfirmasi Hapus Sosial -->
+<div id="modalHapusSosial" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9998;justify-content:center;align-items:center">
+    <div style="background:#1e293b;border-radius:20px;padding:25px;max-width:350px;width:90%;border:1px solid rgba(255,255,255,0.1);text-align:center">
+        <h3 style="color:white;margin-bottom:10px">Hapus Sosial Media? 🌐</h3>
+        <p style="color:#94a3b8;margin-bottom:20px;font-size:14px">Link sosial media yang dihapus tidak bisa dikembalikan.</p>
+        <div style="display:flex;gap:10px">
+            <button id="btnBatalHapusSosial" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1)">Batal</button>
+            <button id="btnKonfirmasiHapusSosial" style="flex:1;background:linear-gradient(45deg,#ef4444,#dc2626)">Hapus</button>
+        </div>
+    </div>
+</div>
+
 <div class="background"></div>
 
 <div class="container">
@@ -221,8 +245,19 @@ function createSkill(skill, id){
 }
 
 async function hapusSkill(id){
-    await fetch(`/hapus-skill/${id}`, { method: "DELETE" });
-    await loadSkills();
+    const modal = document.getElementById("modalHapusSkill");
+    modal.style.display = "flex";
+
+    document.getElementById("btnBatalHapusSkill").onclick = () => {
+        modal.style.display = "none";
+    };
+
+    document.getElementById("btnKonfirmasiHapusSkill").onclick = async () => {
+        modal.style.display = "none";
+        await fetch(`/hapus-skill/${id}`, { method: "DELETE" });
+        showToast("Skill dihapus! 🎯");
+        await loadSkills();
+    };
 }
 
 // Project
@@ -336,8 +371,19 @@ function createSocial(name, link, id){
 }
 
 async function hapusSosial(id){
-    await fetch(`/hapus-sosial/${id}`, { method: "DELETE" });
-    await loadSocials();
+    const modal = document.getElementById("modalHapusSosial");
+    modal.style.display = "flex";
+
+    document.getElementById("btnBatalHapusSosial").onclick = () => {
+        modal.style.display = "none";
+    };
+
+    document.getElementById("btnKonfirmasiHapusSosial").onclick = async () => {
+        modal.style.display = "none";
+        await fetch(`/hapus-sosial/${id}`, { method: "DELETE" });
+        showToast("Sosial media dihapus! 🌐");
+        await loadSocials();
+    };
 }
 
 let selectedArah = '45deg';
