@@ -464,6 +464,12 @@ app.get("/project-saya", requireLogin, (req, res) => {
 
 app.get("/feed", requireLogin, (req, res) => {
     const user_id = req.session.user.id;
+    const page = parseInt(req.query.page) || 1;
+    const limit = 5;
+    const offset = (page - 1) * limit;
+    const keyword = req.query.keyword || "";
+    const keywordLike = `%${keyword}%`;
+
     const sql = `
         SELECT posts.*, users.username, users.tagline,
         portfolios.profile_image as avatar, portfolios.bio,
@@ -476,12 +482,14 @@ app.get("/feed", requireLogin, (req, res) => {
         JOIN users ON posts.user_id = users.id
         LEFT JOIN portfolios ON posts.user_id = portfolios.user_id
         LEFT JOIN projects ON posts.project_id = projects.id
+        WHERE users.username LIKE ? OR posts.caption LIKE ?
         ORDER BY is_following DESC, posts.created_at DESC
+        LIMIT ? OFFSET ?
     `;
-    db.query(sql, (err, result) => {
+
+    db.query(sql, [keywordLike, keywordLike, limit, offset], (err, result) => {
         if(err){ console.log(err); res.json([]); return; }
 
-        // Ambil skills tiap user
         const promises = result.map(post => {
             return new Promise(resolve => {
                 db.query("SELECT skill_name FROM skills WHERE user_id = ?", [post.user_id], (err, skills) => {
